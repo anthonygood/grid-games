@@ -1,13 +1,3 @@
-class GameOfLife {
-  constructor(bitmap) {
-    this.bitmap = bitmap
-  }
-
-  tick() {
-
-  }
-}
-
 const countNeighbours = ([x, y], bitmap) => {
   let count = 0
   for (let i = x - 1; i <= x + 1; i++) {
