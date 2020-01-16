@@ -1,0 +1,16 @@
+{
+  "name": "game-of-life",
+  "version": "1.0.0",
+  "description": "An implementation of Conway's old fave.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --recursive './src/**/*test.js'"
+  },
+  "author": "Anthony Good",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^7.0.0"
+  },
+  "mocha": {}
+}
