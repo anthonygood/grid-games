@@ -1,9 +1,22 @@
+const blank = (width, height) => {
+  return Array.from({ length: height })
+    .fill(null)
+    .map(() => Array.from({ length: width }).fill(0))
+}
+
 const map = (grid, fn) =>
   grid.map((row, i) =>
     row.map((cell, j) =>
       fn(cell, [i,j], row, grid)
     )
   )
+
+const flatten = arr => arr.reduce((acc, item) =>
+  Array.isArray(item) ? acc.concat(flatten(item)) : acc.concat(item),
+  []
+)
+
+const reduce = (grid, fn) => flatten(grid).reduce(fn)
 
 const forEveryNeighbour = ([_i, _j], grid, fn) => {
   for (let i = _i - 1; i <= _i + 1; i++) {
@@ -32,8 +45,11 @@ const countNeighbourValues = (indices, grid) =>
   getNeighbours(indices, grid).reduce((a, b) => a + b)
 
 module.exports = {
+  blank,
+  flatten,
   forEveryNeighbour,
   map,
   mapNeighbours,
   countNeighbourValues,
+  reduce,
 }

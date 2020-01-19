@@ -1,4 +1,4 @@
-const { countNeighbourValues } = require('./gridLogic')
+const { countNeighbourValues } = require('./Grid')
 
 const willLive = (isAlive, neighbourCount) =>
   neighbourCount === 3 || isAlive && neighbourCount === 2
