@@ -1,15 +1,13 @@
-const { countNeighbourValues } = require('./Grid')
+const { countNeighbourValues, map } = require('./Grid')
 
 const willLive = (isAlive, neighbourCount) =>
   neighbourCount === 3 || isAlive && neighbourCount === 2
 
 const liveOrDie = (isAlive, neighbourCount) => Number(willLive(isAlive, neighbourCount))
 
-const tick = bitmap => bitmap.map(
-  (row, i) => row.map(
-    (aliveOrDead, j) => liveOrDie(aliveOrDead, countNeighbourValues([i,j], bitmap))
-  )
-)
+const tickCell = (aliveOrDead, indices, _row, grid) => liveOrDie(aliveOrDead, countNeighbourValues(indices, grid))
+
+const tick = grid => map(grid, tickCell)
 
 module.exports = {
   countNeighbourValues,

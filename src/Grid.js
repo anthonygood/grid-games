@@ -1,7 +1,6 @@
-const blank = (width, height) => {
+const blank = (width, height, filler = 0) => {
   return Array.from({ length: height })
-    .fill(null)
-    .map(() => Array.from({ length: width }).fill(0))
+    .map(() => Array.from({ length: width }).fill(filler))
 }
 
 const map = (grid, fn) =>
@@ -23,7 +22,7 @@ const forEveryNeighbour = ([_i, _j], grid, fn) => {
     for (let j = _j - 1; j <= _j + 1; j++) {
       if (i === _i && j === _j) continue
       const neighbour = grid[i] && grid[i][j]
-      if (neighbour) fn(neighbour, i, j, grid)
+      if (neighbour !== undefined) fn(neighbour, i, j, grid)
     }
   }
 }
@@ -42,14 +41,14 @@ const getNeighbours = (indices, grid) =>
   mapNeighbours(indices, grid, _ => _)
 
 const countNeighbourValues = (indices, grid) =>
-  getNeighbours(indices, grid).reduce((a, b) => a + b)
+  getNeighbours(indices, grid).reduce((a, b) => a + b, 0)
 
 module.exports = {
   blank,
+  countNeighbourValues,
   flatten,
   forEveryNeighbour,
   map,
   mapNeighbours,
-  countNeighbourValues,
   reduce,
 }
