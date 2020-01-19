@@ -1,6 +1,6 @@
 
 const expect = require('chai').expect
-const { countNeighbours, liveOrDie, tick } = require('./')
+const { liveOrDie, tick } = require('./')
 
 describe('GameOfLife', () => {
   const bitmap = [
@@ -14,32 +14,6 @@ describe('GameOfLife', () => {
     [1,0,1,0],
     [0,1,0,1],
   ]
-
-  describe('countNeighbours', () => {
-    const countNeighourMap = arr => arr.map(
-      (row, i) => row.map(
-        (_, j) => countNeighbours([i,j], arr)
-      )
-    )
-
-    it('returns the number of living neighbours', () => {
-      expect(
-        countNeighourMap(bitmap)
-      ).to.deep.equal([
-        [3,2],
-        [2,2]
-      ])
-
-      expect(
-        countNeighourMap(bigBitmap)
-      ).to.deep.equal([
-        [2,2,4,2],
-        [3,4,4,2],
-        [2,5,5,4],
-        [2,2,3,1]
-      ])
-    })
-  })
 
   describe('liveOrDie', () => {
     it('returns correct state for living cells', () => {
