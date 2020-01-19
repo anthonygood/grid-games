@@ -1,5 +1,5 @@
 const expect = require('chai').expect
-const { countNeighbourValues, map, mapNeighbours } = require('./gridLogic')
+const { countNeighbourValues, map } = require('./Grid')
 
 describe('map', () => {
   const small = [
