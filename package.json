@@ -1,8 +1,8 @@
 {
-  "name": "game-of-life",
+  "name": "grid-games",
   "version": "1.0.0",
-  "description": "An implementation of Conway's old fave.",
-  "main": "src/index.js",
+  "description": "Some implementations of grid-based games",
+  "main": "src/GameOfLife.js",
   "scripts": {
     "test": "mocha --recursive './src/**/*test.js'"
   },
