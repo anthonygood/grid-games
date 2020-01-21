@@ -5,15 +5,24 @@ const MINE = 1
 
 const randomIndex = arr => Math.floor(Math.random() * arr.length)
 
+const withinRange = (val, lower, upper) => val >= lower && val <= upper
+
+const withinRadius = ([i, j], indicesB) => {
+  const [bI, bJ] = indicesB
+  return withinRange(bI, i-1, i+1) && withinRange(bJ, j-1, j+1)
+}
+
 const newBoard = (
   width,
   height,
   mineCount = 0,
   keepClear = []
 ) => {
-  const [clearI, clearJ] = keepClear
+  width = Math.max(width, 3)
+  height = Math.max(height, 3)
+
   const board = blank(width, height, EMPTY)
-  let remainingToInsert = Math.min(mineCount, width * height - 1)
+  let remainingToInsert = Math.min(mineCount, (width * height) - 9)
 
   while (remainingToInsert) {
     const i = randomIndex(board)
@@ -21,7 +30,7 @@ const newBoard = (
     const cell = board[i][j]
 
     if (
-      (i === clearI && j === clearJ) ||
+      withinRadius(keepClear, [i, j]) ||
       cell === MINE
     ) continue
 
@@ -73,7 +82,7 @@ class Minesweeper {
     this.moves.push([i, j])
 
     if (!this.board) {
-      this.board = newBoard(width, height, mineCount, [i, j]) // NB coords are swapped as indices
+      this.board = newBoard(width, height, mineCount, [i, j])
       this.next = nextState(this.board)
     }
 

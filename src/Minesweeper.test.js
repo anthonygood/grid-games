@@ -1,9 +1,9 @@
 const expect = require('chai').expect
 const { newBoard, nextState, Minesweeper } = require('./Minesweeper')
-const { reduce } = require('./Grid')
+const { countNeighbourValues, findIndex, reduce } = require('./Grid')
 
 describe('newBoard', () => {
-  const board = newBoard(5, 8, 10)
+  const board = newBoard(5, 8, 10, [3,4])
   const rowLengths = board.map(row => row.length)
 
   it('returns a new board with correct width', () => {
@@ -22,19 +22,21 @@ describe('newBoard', () => {
     ).to.equal(10)
   })
 
-  it('accepts keepClear argument', () => {
+  it('accepts keepClear argument which ensures cell has zero mines adjacent', () => {
     const keepClear = [5,5]
     const board = newBoard(10, 10, 99, keepClear)
     const cell = board[5][5]
+    const surroundingMines = countNeighbourValues([5,5], board)
 
     expect(cell).to.equal(0)
+    expect(surroundingMines).to.equal(0)
   })
 
-  it('cannot add more mines than n^2-1', () => {
+  it('cannot add more mines than hw-9', () => {
     const board = newBoard(10, 10, 200)
     expect(
       reduce(board, (acc, cell) => acc + cell)
-    ).to.equal(99)
+    ).to.equal(91)
   })
 })
 
@@ -97,36 +99,21 @@ describe('nextState', () => {
 })
 
 describe('Minesweeper', () => {
-  const board = [
-    [0,1,1],
-    [1,0,0],
-    [0,0,0]
-  ]
-
-  const game = new Minesweeper(3, 3, 4)
+  const game = new Minesweeper(6, 6, 12)
 
   describe('move', () => {
-    const result = game.move(1, 1)
     it('returns TRUE where the sweep is successful', () => {
-      expect(result).to.be.true
+      expect(
+        game.move(1, 1)
+      ).to.be.true
     })
 
-    it('updates the state', () => {
-      game.board = board
-      game.move(1, 1)
-      expect(game.state).to.deep.equal([
-        [-1,-1,-1],
-        [-1, 3,-1],
-        [-1,-1,-1]
-      ])
+    it('returns FALSE when a mine is hit', () => {
+      const [x, y] = findIndex(game.board, val => val)
 
-      game.board = board
-      game.move(2, 2)
-      expect(game.state).to.deep.equal([
-        [-1,-1,-1],
-        [-1, 3, 2],
-        [-1, 1, 0]
-      ])
+      expect(
+        game.move(x, y)
+      ).to.be.false
     })
   })
 })
