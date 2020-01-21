@@ -3,6 +3,13 @@ const blank = (width, height, filler = 0) => {
     .map(() => Array.from({ length: width }).fill(filler))
 }
 
+const forEach = (grid, fn) =>
+  grid.forEach((row, i) =>
+    row.forEach((cell, j) =>
+      fn(cell, [i, j], row, grid)
+    )
+  )
+
 const map = (grid, fn) =>
   grid.map((row, i) =>
     row.map((cell, j) =>
@@ -43,9 +50,24 @@ const getNeighbours = (indices, grid) =>
 const countNeighbourValues = (indices, grid) =>
   getNeighbours(indices, grid).reduce((a, b) => a + b, 0)
 
+const findIndex = (grid, predicateFn) => {
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      if (predicateFn(
+        grid[i][j],
+        [i, j],
+        grid[i],
+        grid
+      )) return [i, j]
+    }
+  }
+}
+
 module.exports = {
   blank,
   countNeighbourValues,
+  forEach,
+  findIndex,
   flatten,
   forEveryNeighbour,
   map,

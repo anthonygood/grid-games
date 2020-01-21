@@ -1,6 +1,7 @@
 const expect = require('chai').expect
 const {
   countNeighbourValues,
+  findIndex,
   flatten,
   map,
   reduce
@@ -88,5 +89,23 @@ describe('countNeighbourValues', () => {
       [2,5,5,4],
       [2,2,3,1]
     ])
+  })
+
+  describe('findIndex', () => {
+    it('returns tuple of indices where value passes predicate', () => {
+      expect(
+        findIndex([
+          [0,1],
+          [0,0]
+        ], value => value)
+      ).to.deep.equal([0,1])
+
+      expect(
+        findIndex([
+          [0,0,0],
+          [0,1,'foo']
+        ], value => typeof value === 'string')
+      ).to.deep.equal([1,2])
+    })
   })
 })
