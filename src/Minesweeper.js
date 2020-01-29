@@ -99,7 +99,7 @@ class Minesweeper {
       this.next = nextState(this.board)
     }
 
-    if (this.board[i][j]) return false
+    if (this.board[i][j] === MINE) return false
 
     this.state = this.next(i, j)
     return true

@@ -104,10 +104,22 @@ describe('Minesweeper', () => {
       expect(
         game.move(1, 1)
       ).to.be.true
+
+      const [i, j] = findIndex(game.board, val => val === 1)
+
+      expect(
+        game.move(i, j)
+      ).to.be.true
+
+      const [i2, j2] = findIndex(game.board, val => val !== 'x')
+
+      expect(
+        game.move(i2, j2)
+      ).to.be.true
     })
 
     it('returns FALSE when a mine is hit', () => {
-      const [i, j] = findIndex(game.board, val => val)
+      const [i, j] = findIndex(game.board, val => val === 'x')
 
       expect(
         game.move(i, j)
