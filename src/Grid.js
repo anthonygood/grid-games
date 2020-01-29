@@ -22,7 +22,7 @@ const flatten = arr => arr.reduce((acc, item) =>
   []
 )
 
-const reduce = (grid, fn) => flatten(grid).reduce(fn)
+const reduce = (grid, ...args) => flatten(grid).reduce(...args)
 
 const forEveryNeighbour = ([_i, _j], grid, fn) => {
   for (let i = _i - 1; i <= _i + 1; i++) {

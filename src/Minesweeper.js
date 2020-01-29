@@ -1,7 +1,5 @@
 const { blank, countNeighbourValues, forEveryNeighbour, map } = require('./Grid')
-
-const EMPTY = 0
-const MINE = 1
+const MINE = 'x'
 
 const randomIndex = arr => Math.floor(Math.random() * arr.length)
 
@@ -12,16 +10,19 @@ const withinRadius = ([i, j], indicesB) => {
   return withinRange(bI, i-1, i+1) && withinRange(bJ, j-1, j+1)
 }
 
-const newBoard = (
+// Returns 2D array where 1 represents mine and 0 represent clear
+const gridWithMines = (
   width,
   height,
   mineCount = 0,
   keepClear = []
 ) => {
+  const mine = 1
+  const empty = 0
   width = Math.max(width, 3)
   height = Math.max(height, 3)
 
-  const board = blank(width, height, EMPTY)
+  const board = blank(width, height, empty)
   let remainingToInsert = Math.min(mineCount, (width * height) - 9)
 
   while (remainingToInsert) {
@@ -31,15 +32,28 @@ const newBoard = (
 
     if (
       withinRadius(keepClear, [i, j]) ||
-      cell === MINE
+      cell === mine
     ) continue
 
-    board[i][j] = MINE
+    board[i][j] = mine
     remainingToInsert--
   }
 
   return board
 }
+
+// Returns 2D array where:
+//   mines are represented by 'x',
+//   other values are the counts of adjacent mines
+const newBoard = (
+  width,
+  height,
+  mineCount = 0,
+  keepClear = []
+) => map(
+  gridWithMines(width, height, mineCount, keepClear),
+  (cell, indices, _row, board) => cell ? MINE : countNeighbourValues(indices, board)
+)
 
 const sweep = (state, counts, i, j) => {
   // No-op if this cell has been swept already
@@ -58,11 +72,10 @@ const sweep = (state, counts, i, j) => {
 
 const nextState = board => {
   const state = map(board, () => -1)
-  const counts = map(board, (_, indices) => countNeighbourValues(indices, board))
 
   return (i, j) => {
     if (board[i][j] === MINE) return null
-    sweep(state, counts, i, j)
+    sweep(state, board, i, j)
     return state
   }
 }

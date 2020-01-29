@@ -1,6 +1,6 @@
 const expect = require('chai').expect
 const { newBoard, nextState, Minesweeper } = require('./Minesweeper')
-const { countNeighbourValues, findIndex, reduce } = require('./Grid')
+const { findIndex, reduce } = require('./Grid')
 
 describe('newBoard', () => {
   const board = newBoard(5, 8, 10, [3,4])
@@ -18,7 +18,7 @@ describe('newBoard', () => {
 
   it('grids have the correct number of mines', () => {
     expect(
-      reduce(board, (acc, cell) => acc + cell)
+      reduce(board, (acc, cell) => cell === 'x' ? acc + 1 : acc, 0)
     ).to.equal(10)
   })
 
@@ -26,25 +26,23 @@ describe('newBoard', () => {
     const keepClear = [5,5]
     const board = newBoard(10, 10, 99, keepClear)
     const cell = board[5][5]
-    const surroundingMines = countNeighbourValues([5,5], board)
 
     expect(cell).to.equal(0)
-    expect(surroundingMines).to.equal(0)
   })
 
   it('cannot add more mines than hw-9', () => {
     const board = newBoard(10, 10, 200)
     expect(
-      reduce(board, (acc, cell) => acc + cell)
+      reduce(board, (acc, cell) => cell === 'x' ? acc + 1 : acc, 0)
     ).to.equal(91)
   })
 })
 
 describe('nextState', () => {
   const next = nextState([
-    [0,1,1],
-    [1,0,0],
-    [0,0,0]
+    [ 2 ,'x','x'],
+    ['x', 3 , 2 ],
+    [ 1 , 1 , 0 ]
   ])
 
   it('returns UI state for move', () => {
@@ -77,11 +75,11 @@ describe('nextState', () => {
     ).to.deep.equal(null)
 
     const otherBoard = [
-      [1,0,0,1],
-      [0,0,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
+      ['x',1, 1,'x'],
+      [ 1, 1, 1, 1 ],
+      [ 0, 0, 0, 0 ],
+      [ 0, 0, 0, 0 ],
+      [ 0, 0, 0, 0 ],
     ]
 
     const otherNext = nextState(otherBoard)
@@ -109,11 +107,25 @@ describe('Minesweeper', () => {
     })
 
     it('returns FALSE when a mine is hit', () => {
-      const [x, y] = findIndex(game.board, val => val)
+      const [i, j] = findIndex(game.board, val => val)
 
       expect(
-        game.move(x, y)
+        game.move(i, j)
       ).to.be.false
+    })
+  })
+
+  describe('board', () => {
+    it('contains 2D array of counts and mines with mines represented as \'x\'', () => {
+      expect(
+        game.board.length
+      ).to.equal(6)
+
+      const serialised = reduce(game.board, (acc, cell) => acc + cell, 0)
+
+      expect(
+        serialised.match(/x/g).length
+      ).to.equal(12)
     })
   })
 })
