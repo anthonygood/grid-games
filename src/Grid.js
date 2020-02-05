@@ -1,6 +1,6 @@
 const blank = (width, height, filler = 0) => {
   return Array.from({ length: height })
-    .map(() => Array.from({ length: width }).fill(filler))
+    .map(() => new Array(width).fill(filler))
 }
 
 const forEach = (grid, fn) =>

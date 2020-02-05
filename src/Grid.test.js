@@ -1,5 +1,6 @@
 const expect = require('chai').expect
 const {
+  blank,
   countNeighbourValues,
   findIndex,
   flatten,
@@ -18,6 +19,31 @@ const big = [
   [1,0,1,0],
   [0,1,0,1],
 ]
+
+describe('blank', () => {
+  const width = 2
+  const height = 4
+  const grid = blank(width, height)
+
+  it('returns 2D square grid of correct height and width', () => {
+    expect(grid.length).to.equal(height)
+    grid.forEach(row => expect(row.length).to.equal(width))
+  })
+
+  it('by default fills grid with zeros', () => {
+    grid.forEach(row => row.forEach(cell =>
+      expect(cell).to.equal(0)
+    ))
+  })
+
+  it('can fill grid with a different value', () => {
+    const filler = 'foo'
+    const grid = blank(width, height, filler)
+    grid.forEach(row => row.forEach(cell =>
+      expect(cell).to.equal(filler)
+    ))
+  })
+})
 
 describe('map', () => {
   it('returns map of function', () => {
