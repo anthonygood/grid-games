@@ -66,19 +66,21 @@ const findIndex = (grid, predicateFn) => {
 const greatest = (a, b) =>
   a.length > b.length ? a : b
 
-const union = (a, b, fill = 0) => {
+const combineGrids = combineFn => (a, b, fill = 0) => {
   const { length: height } = greatest(a, b);
   const { length: width } = greatest(a[0], b[0]);
 
   return map(
     blank(width, height),
-    (cell, [i,j], row, grid) =>
-      a[i]?.[j] || b[i]?.[j] || fill
+    (cell, [i,j], row, grid) => combineFn(a[i]?.[j], b[i]?.[j], fill)
   )
 }
 
+const union = combineGrids((a, b, fill) => a || b || fill);
+const add = combineGrids((a = 0, b = 0) => a + b);
+
 module.exports = {
-  union,
+  add,
   blank,
   countNeighbourValues,
   forEach,
@@ -88,4 +90,5 @@ module.exports = {
   map,
   mapNeighbours,
   reduce,
+  union,
 }

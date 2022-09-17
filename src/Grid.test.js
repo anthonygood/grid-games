@@ -1,5 +1,6 @@
 const expect = require('chai').expect
 const {
+  add,
   blank,
   countNeighbourValues,
   findIndex,
@@ -152,6 +153,26 @@ describe('union', () => {
       )
     ).to.deep.equal([
       [1,1,0],
+      [0,1,1],
+    ])
+  })
+})
+
+describe('add', () => {
+  it('returns the two grids added together', () => {
+    expect(
+      add(
+        [
+          [1,0,0],
+          [0,0,1],
+        ],
+        [
+          [1,1],
+          [0,1],
+        ]
+      )
+    ).to.deep.equal([
+      [2,1,0],
       [0,1,1],
     ])
   })
