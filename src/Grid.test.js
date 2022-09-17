@@ -3,6 +3,7 @@ const {
   add,
   blank,
   countNeighbourValues,
+  debug,
   findIndex,
   flatten,
   intersection,
@@ -202,19 +203,18 @@ describe('intersection', () => {
 
 describe('superimpose', () => {
   it('returns one grid superimposed on the other at given position', () => {
+    const main = blank(5, 7)
     const imposed = [
       [1,1],
       [1,0],
     ]
 
-    const grid = blank(5, 5)
-
     // Add a single value just to check it's preserved by superimposition
-    grid[4][4] = 2
+    main[4][4] = 2
 
     expect(
       superimpose(
-        grid,
+        main,
         imposed,
         2, 1,
       )
@@ -224,12 +224,37 @@ describe('superimpose', () => {
       [0,0,1,0,0],
       [0,0,0,0,0],
       [0,0,0,0,2],
+      [0,0,0,0,0],
+      [0,0,0,0,0],
     ])
   })
 
-  it('throws if imposed grid would be out of bounds', () => {
-    expect(() => {
-      superimpose(blank(3, 3), [[1]], 0, 5)
-    }).to.throw('Superimposed grid would be out of bounds')
-  });
+  describe('throws', () => {
+    const main = blank(3, 3)
+    const imposed = [[1]]
+
+    it('throws if imposed grid origin x would be out of bounds', () => {
+      expect(() => {
+        superimpose(main, imposed, 5, 0)
+      }).to.throw('Superimposed grid would be out of bounds')
+    })
+  
+    it('throws if imposed grid origin y would be out of bounds', () => {
+      expect(() => {
+        superimpose(main, imposed, 0, 5)
+      }).to.throw('Superimposed grid would be out of bounds')
+    })
+  
+    it('throws if imposed grid width would be out of bounds', () => {
+      const main = blank(3, 6)
+      const skew = [
+        [0,1,1],
+        [1,1,0],
+      ]
+  
+      expect(() => {
+        debug(superimpose(main, skew, 1, 0))
+      }).to.throw('Superimposed grid would be out of bounds')
+    })
+  })
 })

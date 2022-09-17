@@ -1,7 +1,12 @@
+const debug = grid => grid.forEach(row => console.log(row))
+
 const blank = (width, height, filler = 0) => {
   return Array.from({ length: height })
     .map(() => new Array(width).fill(filler))
 }
+
+const height = grid => grid.length
+const width = grid => grid[0]?.length
 
 const forEach = (grid, fn) =>
   grid.forEach((row, i) =>
@@ -83,15 +88,15 @@ const add = combineGrids((a = 0, b = 0) => a + b);
 const intersection = combineGrids((a = 0, b = 0) => a && b);
 
 const superimpose = (main, imposed, x, y) => {
-  const height = main.length
-  const width = main[0].length
-  const imposedGrid = blank(height, width);
+  const w = width(main)
+  const h = height(main)
+  const imposedGrid = blank(w, h)
 
   forEach(imposed, (cell, [i, j], _row, _grid) => {
     const yIndex = i + y;
     const xIndex = j + x;
 
-    if (yIndex > height || xIndex > width) {
+    if (yIndex >= h || xIndex >= w) {
       throw new Error('Superimposed grid would be out of bounds')
     }
     imposedGrid[yIndex][xIndex] = cell;
@@ -104,14 +109,17 @@ module.exports = {
   add,
   blank,
   countNeighbourValues,
+  debug,
   forEach,
   findIndex,
   flatten,
   forEveryNeighbour,
+  height,
   intersection,
   map,
   mapNeighbours,
   superimpose,
   reduce,
   union,
+  width,
 }
