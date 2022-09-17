@@ -209,6 +209,9 @@ describe('superimpose', () => {
 
     const grid = blank(5, 5)
 
+    // Add a single value just to check it's preserved by superimposition
+    grid[4][4] = 2
+
     expect(
       superimpose(
         grid,
@@ -220,7 +223,7 @@ describe('superimpose', () => {
       [0,0,1,1,0],
       [0,0,1,0,0],
       [0,0,0,0,0],
-      [0,0,0,0,0],
+      [0,0,0,0,2],
     ])
   })
 
