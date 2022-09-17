@@ -1,10 +1,36 @@
 const Grid = require('./Grid')
 
+Events = {}
+Events.TETROMINO_LANDING = 'tetromino:landing'
+
 class Tetris {
   constructor(width = 10, height = 20) {
     this.board = Grid.blank(width, height)
     this.tetromino = null
     this.tetrominoPosition = null
+    this.eventListeners = {
+      [Events.TETROMINO_LANDING]: []
+    }
+  }
+
+  on(event, fn) {
+    const subscribers = this.eventListeners[event]
+
+    if (!subscribers) {
+      throw new Error(`Event '${event}' not supported`)
+    }
+
+    subscribers.push(fn)
+  }
+
+  trigger(event, payload) {
+    const subscribers = this.eventListeners[event]
+
+    if (!subscribers) {
+      throw new Error(`Event '${event}' not supported`)
+    }
+
+    subscribers.forEach(subscriber => subscriber(payload))
   }
 
   spawn(twoDArray) {
@@ -36,6 +62,19 @@ class Tetris {
 
     // TODO: y?
     this.tetrominoPosition = [newX, y]
+  }
+
+  gravity() {
+    const [x, y] = this.tetrominoPosition
+    const newY = y + 1
+    const bottomY = newY + Grid.height(this.tetromino)
+    this.tetrominoPosition = [x, newY]
+
+    if (bottomY >= this.height()) {
+      this.trigger(Events.TETROMINO_LANDING)
+      this.board = this.compositeBoard()
+      // this.tetromino = null
+    }
   }
 
   compositeBoard() {
@@ -120,6 +159,8 @@ Tetris.Tetromino = {
 
   rotate: rotateClockwise,
 }
+
+Tetris.Events = Events
 
 module.exports = {
   Tetris,

@@ -60,6 +60,95 @@ describe('Tetris', () => {
       [0,0,0,0],
     ])
   })
+
+  it('can enact gravity', () => {
+    const tetris = new Tetris(4, 5)
+    tetris.spawn(Tetromino.T())
+
+    expect(tetris.compositeBoard()).to.deep.equal([
+      [0,1,1,1],
+      [0,0,1,0],
+      [0,0,0,0],
+      [0,0,0,0],
+      [0,0,0,0],
+    ])
+
+    tetris.gravity()
+
+    expect(tetris.compositeBoard()).to.deep.equal([
+      [0,0,0,0],
+      [0,1,1,1],
+      [0,0,1,0],
+      [0,0,0,0],
+      [0,0,0,0],
+    ])
+  })
+
+  describe('when a tetromino lands', () => {
+    it('emits an event', () => {
+      const tetris = new Tetris(4, 4)
+
+      let resolved = false
+      tetris.on('tetromino:landing', () => resolved = true)
+
+      tetris.spawn(Tetromino.L())
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,1,1,1],
+        [0,1,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
+      expect(resolved).to.equal(false)
+
+      tetris.gravity()
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,0,0],
+        [0,1,1,1],
+        [0,1,0,0],
+        [0,0,0,0],
+      ])
+      expect(resolved).to.equal(false)
+
+      tetris.gravity()
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,1,1,1],
+        [0,1,0,0],
+      ])
+      expect(resolved).to.equal(true)
+    })
+
+    it('updates the grid to incorporate the tetromino\'s final position', () => {
+      const tetris = new Tetris(4, 4)
+
+      tetris.spawn(Tetromino.square())
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,1,1,0],
+        [0,1,1,0],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
+
+      tetris.gravity()
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,0,0],
+        [0,1,1,0],
+        [0,1,1,0],
+        [0,0,0,0],
+      ])
+
+      tetris.gravity()
+      const expectedBoard = [
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,1,1,0],
+        [0,1,1,0],
+      ]
+      expect(tetris.compositeBoard()).to.deep.equal(expectedBoard)
+      expect(tetris.board).to.deep.equal(expectedBoard)
+    })
+  })
 })
 
 describe('Tetromino has', () => {
