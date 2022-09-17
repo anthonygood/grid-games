@@ -7,6 +7,7 @@ const {
   flatten,
   intersection,
   map,
+  superimpose,
   reduce,
   union,
 } = require('./Grid')
@@ -197,4 +198,35 @@ describe('intersection', () => {
       [0,0,0],
     ])
   })
+})
+
+describe('superimpose', () => {
+  it('returns one grid superimposed on the other at given position', () => {
+    const imposed = [
+      [1,1],
+      [1,0],
+    ]
+
+    const grid = blank(5, 5)
+
+    expect(
+      superimpose(
+        grid,
+        imposed,
+        2, 1,
+      )
+    ).to.deep.equal([
+      [0,0,0,0,0],
+      [0,0,1,1,0],
+      [0,0,1,0,0],
+      [0,0,0,0,0],
+      [0,0,0,0,0],
+    ])
+  })
+
+  it('throws if imposed grid would be out of bounds', () => {
+    expect(() => {
+      superimpose(blank(3, 3), [[1]], 0, 5)
+    }).to.throw('Superimposed grid would be out of bounds')
+  });
 })

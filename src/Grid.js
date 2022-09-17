@@ -72,7 +72,7 @@ const combineGrids = combineFn => (a, b, fill = 0) => {
 
   return map(
     blank(width, height),
-    (cell, [i,j], row, grid) => combineFn(a[i]?.[j], b[i]?.[j], fill)
+    (_cell, [i,j], _row, _grid) => combineFn(a[i]?.[j], b[i]?.[j], fill)
   )
 }
 
@@ -81,6 +81,24 @@ const add = combineGrids((a = 0, b = 0) => a + b);
 
 // NB. the returned grid is the size of the union of grids, but values are intersection
 const intersection = combineGrids((a = 0, b = 0) => a && b);
+
+const superimpose = (main, imposed, x, y) => {
+  const height = main.length
+  const width = main[0].length
+  const imposedGrid = blank(height, width);
+
+  forEach(imposed, (cell, [i, j], _row, _grid) => {
+    const yIndex = i + y;
+    const xIndex = j + x;
+
+    if (yIndex > height || xIndex > width) {
+      throw new Error('Superimposed grid would be out of bounds')
+    }
+    imposedGrid[yIndex][xIndex] = cell;
+  })
+
+  return union(main, imposedGrid);
+}
 
 module.exports = {
   add,
@@ -93,6 +111,7 @@ module.exports = {
   intersection,
   map,
   mapNeighbours,
+  superimpose,
   reduce,
   union,
 }
