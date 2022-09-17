@@ -79,6 +79,9 @@ const combineGrids = combineFn => (a, b, fill = 0) => {
 const union = combineGrids((a, b, fill) => a || b || fill);
 const add = combineGrids((a = 0, b = 0) => a + b);
 
+// NB. the returned grid is the size of the union of grids, but values are intersection
+const intersection = combineGrids((a = 0, b = 0) => a && b);
+
 module.exports = {
   add,
   blank,
@@ -87,6 +90,7 @@ module.exports = {
   findIndex,
   flatten,
   forEveryNeighbour,
+  intersection,
   map,
   mapNeighbours,
   reduce,

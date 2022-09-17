@@ -5,6 +5,7 @@ const {
   countNeighbourValues,
   findIndex,
   flatten,
+  intersection,
   map,
   reduce,
   union,
@@ -174,6 +175,26 @@ describe('add', () => {
     ).to.deep.equal([
       [2,1,0],
       [0,1,1],
+    ])
+  })
+})
+
+describe('intersection', () => {
+  it('returns the intersection of two grids', () => {
+    expect(
+      intersection(
+        [
+          [1,0,0],
+          [0,0,1],
+        ],
+        [
+          [1,1],
+          [0,1],
+        ]
+      )
+    ).to.deep.equal([
+      [1,0,0],
+      [0,0,0],
     ])
   })
 })
