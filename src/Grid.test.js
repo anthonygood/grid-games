@@ -5,7 +5,8 @@ const {
   findIndex,
   flatten,
   map,
-  reduce
+  reduce,
+  union,
 } = require('./Grid')
 
 const small = [
@@ -133,5 +134,25 @@ describe('countNeighbourValues', () => {
         ], value => typeof value === 'string')
       ).to.deep.equal([1,2])
     })
+  })
+})
+
+describe('union', () => {
+  it('returns the union of two grids', () => {
+    expect(
+      union(
+        [
+          [1,0,0],
+          [0,0,1],
+        ],
+        [
+          [0,1],
+          [0,1],
+        ]
+      )
+    ).to.deep.equal([
+      [1,1,0],
+      [0,1,1],
+    ])
   })
 })

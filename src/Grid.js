@@ -63,7 +63,22 @@ const findIndex = (grid, predicateFn) => {
   }
 }
 
+const greatest = (a, b) =>
+  a.length > b.length ? a : b
+
+const union = (a, b, fill = 0) => {
+  const { length: height } = greatest(a, b);
+  const { length: width } = greatest(a[0], b[0]);
+
+  return map(
+    blank(width, height),
+    (cell, [i,j], row, grid) =>
+      a[i]?.[j] || b[i]?.[j] || fill
+  )
+}
+
 module.exports = {
+  union,
   blank,
   countNeighbourValues,
   forEach,
