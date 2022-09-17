@@ -16,8 +16,26 @@ class Tetris {
     this.tetromino = twoDArray
 
     const tetrominoWidth = Grid.width(twoDArray)
-    const tetrominoXOrigin = this.center() - this.center(tetrominoWidth)
+    const tetrominoXOrigin = this.centre() - this.centre(tetrominoWidth)
     this.tetrominoPosition = [tetrominoXOrigin, 0]
+  }
+
+  rotate() {
+    const prevWidth = Grid.width(this.tetromino)
+    const prevCentre = this.centre(prevWidth)
+
+    this.tetromino = Tetris.Tetromino.rotate(this.tetromino)
+
+    // rotate position
+    const tetrominoWidth = Grid.width(this.tetromino)
+    const centre = this.centre(tetrominoWidth)
+    const [x, y] = this.tetrominoPosition
+
+    const centreDifference = prevCentre - centre
+    const newX = x + centreDifference
+
+    // TODO: y?
+    this.tetrominoPosition = [newX, y]
   }
 
   compositeBoard() {
@@ -34,7 +52,7 @@ class Tetris {
     return Grid.width(this.board)
   }
 
-  center(width = this.width()) {
+  centre(width = this.width()) {
     return Math.floor(width / 2)
   }
 }

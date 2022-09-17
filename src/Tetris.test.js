@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { blank } = require('./Grid');
+const { blank, debug } = require('./Grid');
 const { Tetris } = require('./Tetris');
 const { Tetromino } = Tetris
 
@@ -14,13 +14,46 @@ describe('Tetris', () => {
     expect(tetris.board).to.deep.equal(blank(3, 6))
   })
 
-  it('can spawn new tetrominoes at top of board', () => {
+  it('can spawn a new tetromino at top of board', () => {
     const tetris = new Tetris(4, 6)
     tetris.spawn(Tetromino.skew())
 
     expect(tetris.compositeBoard()).to.deep.equal([
       [0,0,1,1],
       [0,1,1,0],
+      [0,0,0,0],
+      [0,0,0,0],
+      [0,0,0,0],
+      [0,0,0,0],
+    ])
+  })
+
+  it('can rotate tetromino', () => {
+    const tetris = new Tetris(4, 6)
+    tetris.spawn(Tetromino.straight())
+    expect(tetris.compositeBoard()).to.deep.equal([
+      [1,1,1,1],
+      [0,0,0,0],
+      [0,0,0,0],
+      [0,0,0,0],
+      [0,0,0,0],
+      [0,0,0,0],
+    ])
+
+    tetris.rotate()
+    expect(tetris.compositeBoard()).to.deep.equal([
+      [0,0,1,0],
+      [0,0,1,0],
+      [0,0,1,0],
+      [0,0,1,0],
+      [0,0,0,0],
+      [0,0,0,0],
+    ])
+
+    tetris.rotate()
+    expect(tetris.compositeBoard()).to.deep.equal([
+      [1,1,1,1],
+      [0,0,0,0],
       [0,0,0,0],
       [0,0,0,0],
       [0,0,0,0],
