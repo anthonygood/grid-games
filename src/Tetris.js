@@ -1,4 +1,4 @@
-const Grid = require('./Grid');
+const Grid = require('./Grid')
 
 class Tetris {
   constructor(width = 10, height = 20) {
@@ -12,11 +12,12 @@ class Tetris {
       throw new TypeError('Must provide two dimensional array representing tetromino to spawn')
     }
 
+    // TODO: More validations
     this.tetromino = twoDArray
 
     const tetrominoWidth = Grid.width(twoDArray)
-    const tetrominoOrigin = this.center() - this.center(tetrominoWidth)
-    this.tetrominoPosition = [tetrominoOrigin, 0]
+    const tetrominoXOrigin = this.center() - this.center(tetrominoWidth)
+    this.tetrominoPosition = [tetrominoXOrigin, 0]
   }
 
   compositeBoard() {
@@ -92,7 +93,7 @@ const straight = TetrominoFactory([
   [1,1,1,1],
 ])
 
-const Tetromino = {
+Tetris.Tetromino = {
   T,
   L,
   skew,
@@ -104,5 +105,4 @@ const Tetromino = {
 
 module.exports = {
   Tetris,
-  Tetromino,
 }

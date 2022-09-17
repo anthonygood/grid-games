@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const { blank } = require('./Grid');
-const { Tetris, Tetromino } = require('./Tetris');
+const { Tetris } = require('./Tetris');
+const { Tetromino } = Tetris
 
 describe('Tetris', () => {
   it('returns new empty grid to begin with, by default 10 * 20', () => {
