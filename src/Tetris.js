@@ -2,6 +2,7 @@ const Grid = require('./Grid')
 
 Events = {}
 Events.TETROMINO_LANDING = 'tetromino:landing'
+Events.LINE_CLEAR = 'lineclear'
 
 const rotateTetromino = (tetris, rotateFn) => () => {
   const prevWidth = Grid.width(tetris.tetromino)
@@ -27,7 +28,8 @@ class Tetris {
     this.tetromino = null
     this.tetrominoPosition = null
     this.eventListeners = {
-      [Events.TETROMINO_LANDING]: []
+      [Events.TETROMINO_LANDING]: [],
+      [Events.LINE_CLEAR]: [],
     }
     this.rotate = rotateTetromino(this, Tetris.Tetromino.rotate)
     this.rotate.reverse = rotateTetromino(this, Tetris.Tetromino.rotate.reverse)
@@ -111,7 +113,31 @@ class Tetris {
     return bottomY >= this.height()
   }
 
+  clearLines() {
+    const { length: total } = this.board.filter(
+      row => row.filter(Boolean).length === this.width()
+    )
+
+    if (total) {
+      this.trigger(Tetris.Events.LINE_CLEAR, { total })
+    }
+
+    const blankLines = Grid.blank(this.width(), total)
+
+    const newBoard = blankLines.concat(
+      this.board.filter(
+        row => row.filter(Boolean).length !== this.width()
+      )
+    )
+
+    this.board = newBoard
+  }
+
   compositeBoard() {
+    if (!this.tetromino) {
+      return this.board
+    }
+
     const [x, y] = this.tetrominoPosition
     return Grid.superimpose(this.board, this.tetromino, x, y)
   }

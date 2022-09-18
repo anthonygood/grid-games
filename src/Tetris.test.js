@@ -292,6 +292,123 @@ describe('Tetris', () => {
       })
     })
   })
+
+  describe('clearing lines', () => {
+    it('does nothing with blank board', () => {
+      const tetris = new Tetris(4, 5)
+      tetris.clearLines()
+
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
+    })
+
+    it('does nothing with broken-up terrain', () => {
+      const tetris = new Tetris(4, 5)
+
+      const board = tetris.board = [
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,1,0,0],
+        [1,1,0,1],
+        [0,1,1,0],
+      ]
+
+      tetris.clearLines()
+
+      expect(tetris.compositeBoard()).to.deep.equal(board)
+    })
+
+    describe('with complete horizontal lines', () => {
+      it('clears a single line', () => {
+        const tetris = new Tetris(4, 5)
+
+        tetris.board = [
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,1,0,0],
+          [1,1,1,1],
+          [1,1,1,0],
+        ]
+
+        tetris.clearLines()
+
+        expect(tetris.compositeBoard()).to.deep.equal([
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,1,0,0],
+          [1,1,1,0],
+        ])
+      })
+
+      it('emits a lineclear event for a single line', () => {
+        const tetris = new Tetris(4, 5)
+        let lineCount = null
+        tetris.on('lineclear', ({ total }) => {
+          lineCount = total
+        })
+
+        tetris.board = [
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,1,0,0],
+          [1,1,1,1],
+          [1,1,1,0],
+        ]
+
+        tetris.clearLines()
+        expect(lineCount).to.equal(1)
+      })
+
+      it('clears multiple lines', () => {
+        const tetris = new Tetris(4, 5)
+
+        tetris.board = [
+          [1,0,1,0],
+          [1,1,1,1],
+          [1,1,1,1],
+          [1,1,1,1],
+          [1,1,1,1],
+        ]
+
+        tetris.clearLines()
+
+        expect(tetris.compositeBoard()).to.deep.equal([
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,0,0,0],
+          [1,0,1,0],
+        ])
+      })
+
+      it('emits an event for multiple lines', () => {
+        it('clears multiple lines', () => {
+          const tetris = new Tetris(4, 5)
+          let lineCount = null
+          tetris.on('lineclear', ({ total }) => {
+            lineCount = total
+          })
+
+          tetris.board = [
+            [1,0,1,0],
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1],
+            [1,1,1,1],
+          ]
+
+          tetris.clearLines()
+          expect(lineCount).to.equal(4)
+        })
+      })
+    })
+  })
 })
 
 describe('Tetris.Tetromino has tetrominoes', () => {
