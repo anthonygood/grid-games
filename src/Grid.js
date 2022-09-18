@@ -71,6 +71,50 @@ const findIndex = (grid, predicateFn) => {
 const greatest = (a, b) =>
   a.length > b.length ? a : b
 
+// For rotation, the transformation we need is:
+// [1,1,1], => [1,1],
+// [1,0,0], => [0,1],
+//          => [0,1],
+// Or:
+// [1,1,1], => [1,0],
+// [1,0,0], => [1,0],
+//          => [1,1],
+// Simply flipping the indexes ([y][x] => [x][y]) gets us close:
+// [1,1,1], => [1,1],
+// [1,0,0], => [1,0],
+//          => [1,0],
+// ie. swapping first (height) index with second (width) results in counter-clockwise + vertically flipped transformation
+// (or you can consider it clockwise + horizontally flipped transformation).
+// So depending on the transformation, we need to 'count backwards' on either the first or second index.
+const rotation = transformIndicesFn => twoDArray => {
+  // Swap height/width
+  const newHeight = width(twoDArray)
+  const newWidth = height(twoDArray)
+  const rotatedGrid = blank(newWidth, newHeight)
+
+  forEach(twoDArray, (cell, [i, j], _row, _grid) => {
+    const [index0, index1] = transformIndicesFn(i, j, newHeight, newWidth)
+    rotatedGrid[index0][index1] = cell
+  })
+
+  return rotatedGrid
+}
+
+const clockwiseIndexTransform = (i, j, _height, width) =>
+  [
+    j,
+    width - 1 - i
+  ]
+
+const antiClockwiseIndexTransform = (i, j, height, _width) =>
+  [
+    height - 1 - j,
+    i
+  ]
+
+const rotateClockwise = rotation(clockwiseIndexTransform)
+const rotateAntiClockwise = rotation(antiClockwiseIndexTransform)
+
 const combineGrids = combineFn => (a, b, fill = 0) => {
   const { length: height } = greatest(a, b);
   const { length: width } = greatest(a[0], b[0]);
@@ -120,6 +164,8 @@ module.exports = {
   mapNeighbours,
   superimpose,
   reduce,
+  rotateAntiClockwise,
+  rotateClockwise,
   union,
   width,
 }

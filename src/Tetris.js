@@ -114,7 +114,6 @@ class Tetris {
     return Grid.superimpose(this.board, this.tetromino, x, y)
   }
 
-
   height() {
     return Grid.height(this.board)
   }
@@ -131,49 +130,8 @@ class Tetris {
 const reverse = (arr) => () =>
   arr.map(array => [...array].reverse())
 
-// For rotation, the transformation we need is:
-// [1,1,1], => [1,1],
-// [1,0,0], => [0,1],
-//          => [0,1],
-// Or:
-// [1,1,1], => [1,0],
-// [1,0,0], => [1,0],
-//          => [1,1],
-// Simply flipping the indexes ([y][x] => [x][y]) gets us close:
-// [1,1,1], => [1,1],
-// [1,0,0], => [1,0],
-//          => [1,0],
-// ie. swapping first (height) index with second (width) results in counter-clockwise + vertically flipped transformation
-// (or you can consider it clockwise + horizontally flipped transformation).
-// So depending on the transformation, we need to 'count backwards' on either the first or second index.
-const rotation = transformIndicesFn => twoDArray => {
-  // Swap height/width
-  const newHeight = Grid.width(twoDArray)
-  const newWidth = Grid.height(twoDArray)
-  const rotatedGrid = Grid.blank(newWidth, newHeight)
-
-  Grid.forEach(twoDArray, (cell, [i, j], _row, _grid) => {
-    const [index0, index1] = transformIndicesFn(i, j, newHeight, newWidth)
-    rotatedGrid[index0][index1] = cell
-  })
-
-  return rotatedGrid
-}
-
-const clockwiseIndexTransform = (i, j, _height, width) =>
-  [
-    j,
-    width - 1 - i
-  ]
-
-const counterClockwiseIndexTransform = (i, j, height, _width) =>
-  [
-    height - 1 - j,
-    i
-  ]
-
-const clockwise = rotation(clockwiseIndexTransform)
-clockwise.reverse = rotation(counterClockwiseIndexTransform)
+const rotate = grid => Grid.rotateClockwise(grid)
+rotate.reverse = Grid.rotateAntiClockwise
 
 const TetrominoFactory = (twoDArray) => {
   fn = () => twoDArray
@@ -212,7 +170,7 @@ Tetris.Tetromino = {
   square,
   straight,
 
-  rotate: clockwise,
+  rotate,
 }
 
 Tetris.Events = Events
