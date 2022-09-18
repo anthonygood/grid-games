@@ -139,32 +139,42 @@ const reverse = (arr) => () =>
 // [1,1,1], => [1,0],
 // [1,0,0], => [1,0],
 //          => [1,1],
-// But the logic below does:
+// Simply flipping the indexes ([y][x] => [x][y]) gets us close:
 // [1,1,1], => [1,1],
 // [1,0,0], => [1,0],
 //          => [1,0],
 // ie. swapping first (height) index with second (width) results in counter-clockwise + vertically flipped transformation
-// (or you can consider it clockwise + horizontally flipped transformation)
-const flipIndices = (twoDArray) => {
+// (or you can consider it clockwise + horizontally flipped transformation).
+// So depending on the transformation, we need to 'count backwards' on either the first or second index.
+const counterClockwise = (twoDArray) => {
+  // Swap height/width
   const newHeight = Grid.width(twoDArray)
   const newWidth = Grid.height(twoDArray)
 
   const newGrid = Grid.blank(newWidth, newHeight)
 
   Grid.forEach(twoDArray, (cell, [i, j], _row, _grid) => {
-    newGrid[j][i] = cell
+    newGrid[newHeight - j - 1][i] = cell
   })
 
   return newGrid
 };
 
-const rotateClockwise = (twoDArray) =>
-  reverse(
-    flipIndices(twoDArray)
-  )()
+const clockwise = (twoDArray) => {
+  // Swap height/width
+  const newHeight = Grid.width(twoDArray)
+  const newWidth = Grid.height(twoDArray)
 
-// Undo vertical flip...
-rotateClockwise.reverse = twoDArray => flipIndices(twoDArray).reverse()
+  const newGrid = Grid.blank(newWidth, newHeight)
+
+  Grid.forEach(twoDArray, (cell, [i, j], _row, _grid) => {
+    newGrid[j][newWidth - i - 1] = cell
+  })
+
+  return newGrid
+};
+
+clockwise.reverse = counterClockwise
 
 const TetrominoFactory = (twoDArray) => {
   fn = () => twoDArray
@@ -203,7 +213,7 @@ Tetris.Tetromino = {
   square,
   straight,
 
-  rotate: rotateClockwise,
+  rotate: clockwise,
 }
 
 Tetris.Events = Events
