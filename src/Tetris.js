@@ -66,24 +66,6 @@ class Tetris {
     this.tetrominoPosition = [tetrominoXOrigin, 0]
   }
 
-  // rotate(rotateFn = Tetris.Tetromino.rotate) {
-  //   const prevWidth = Grid.width(this.tetromino)
-  //   const prevCentre = this.centre(prevWidth)
-
-  //   this.tetromino = rotateFn(this.tetromino)
-
-  //   // rotate position
-  //   const tetrominoWidth = Grid.width(this.tetromino)
-  //   const centre = this.centre(tetrominoWidth)
-  //   const [x, y] = this.tetrominoPosition
-
-  //   const centreDifference = prevCentre - centre
-  //   const newX = x + centreDifference
-
-  //   // TODO: y?
-  //   this.tetrominoPosition = [newX, y]
-  // }
-
   tick() {
     if (
       this.tetrominoHasReachedBottom() ||
