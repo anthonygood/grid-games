@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { blank, debug } = require('./Grid');
+const { blank, superimpose } = require('./Grid');
 const { Tetris } = require('./Tetris');
 const { Tetromino } = Tetris
 
@@ -62,7 +62,7 @@ describe('Tetris', () => {
   })
 
   describe('blocks fall', () => {
-    it('gravity causes tetromino to fall by one cell', () => {
+    it('ticks enact gravity, causing tetromino to fall by one cell', () => {
       const tetris = new Tetris(4, 5)
       tetris.spawn(Tetromino.T())
 
@@ -74,7 +74,7 @@ describe('Tetris', () => {
         [0,0,0,0],
       ])
 
-      tetris.gravity()
+      tetris.tick()
 
       expect(tetris.compositeBoard()).to.deep.equal([
         [0,0,0,0],
@@ -85,7 +85,7 @@ describe('Tetris', () => {
       ])
     })
 
-    describe('when a tetromino lands', () => {
+    describe('when a tetromino lands at the bottom of the board', () => {
       it('emits an event', () => {
         const tetris = new Tetris(4, 4)
 
@@ -101,7 +101,7 @@ describe('Tetris', () => {
         ])
         expect(resolved).to.equal(false)
 
-        tetris.gravity()
+        tetris.tick()
         expect(tetris.compositeBoard()).to.deep.equal([
           [0,0,0,0],
           [0,1,1,1],
@@ -110,7 +110,17 @@ describe('Tetris', () => {
         ])
         expect(resolved).to.equal(false)
 
-        tetris.gravity()
+        tetris.tick()
+        expect(tetris.compositeBoard()).to.deep.equal([
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,1,1,1],
+          [0,1,0,0],
+        ])
+        expect(resolved).to.equal(false)
+
+        // The tetromino should 'land' on the next tick after touching down
+        tetris.tick()
         expect(tetris.compositeBoard()).to.deep.equal([
           [0,0,0,0],
           [0,0,0,0],
@@ -131,7 +141,7 @@ describe('Tetris', () => {
           [0,0,0,0],
         ])
 
-        tetris.gravity()
+        tetris.tick()
         expect(tetris.compositeBoard()).to.deep.equal([
           [0,0,0,0],
           [0,1,1,0],
@@ -139,11 +149,97 @@ describe('Tetris', () => {
           [0,0,0,0],
         ])
 
-        tetris.gravity()
+        tetris.tick()
         const expectedBoard = [
           [0,0,0,0],
           [0,0,0,0],
           [0,1,1,0],
+          [0,1,1,0],
+        ]
+
+        // The tetromino should 'land' on the next tick after touching down
+        expect(tetris.compositeBoard()).to.deep.equal(expectedBoard)
+        expect(tetris.board).to.deep.equal(blank(4, 4))
+
+        tetris.tick()
+
+        expect(tetris.compositeBoard()).to.deep.equal(expectedBoard)
+        expect(tetris.board).to.deep.equal(expectedBoard)
+      })
+    })
+
+    describe('when a tetromino lands on a block on the board', () => {
+      it('emits an event', () => {
+        const tetris = new Tetris(4, 4)
+
+        let resolved = false
+        tetris.on('tetromino:landing', () => resolved = true)
+
+        const terrain = [
+          [1,0],
+          [1,1],
+        ]
+        tetris.board = superimpose(tetris.board, terrain, 1, 2)
+        tetris.spawn(Tetromino.L.reverse())
+        expect(tetris.compositeBoard()).to.deep.equal([
+          [0,1,1,1],
+          [0,0,0,1],
+          [0,1,0,0],
+          [0,1,1,0],
+        ])
+        expect(resolved).to.equal(false)
+
+        tetris.tick()
+        expect(tetris.compositeBoard()).to.deep.equal([
+          [0,0,0,0],
+          [0,1,1,1],
+          [0,1,0,1],
+          [0,1,1,0],
+        ])
+
+        // The tetromino should 'land' on the next tick after touching down
+        expect(resolved).to.equal(false)
+
+        tetris.tick()
+        expect(tetris.compositeBoard()).to.deep.equal([
+          [0,0,0,0],
+          [0,1,1,1],
+          [0,1,0,1],
+          [0,1,1,0],
+        ])
+        expect(resolved).to.equal(true)
+      })
+
+      it('updates the grid to incorporate the tetromino\'s final position', () => {
+        const tetris = new Tetris(4, 4)
+        const terrain = [
+          [1,0],
+          [1,1],
+        ]
+        tetris.board = superimpose(tetris.board, terrain, 1, 2)
+        tetris.spawn(Tetromino.skew.reverse())
+        expect(tetris.compositeBoard()).to.deep.equal([
+          [0,1,1,0],
+          [0,0,1,1],
+          [0,1,0,0],
+          [0,1,1,0],
+        ])
+
+        tetris.tick()
+        expect(tetris.compositeBoard()).to.deep.equal([
+          [0,0,0,0],
+          [0,1,1,0],
+          [0,1,1,1],
+          [0,1,1,0],
+        ])
+
+        // The tetromino should 'land' on the next tick after touching down
+        tetris.tick()
+
+        const expectedBoard = [
+          [0,0,0,0],
+          [0,1,1,0],
+          [0,1,1,1],
           [0,1,1,0],
         ]
         expect(tetris.compositeBoard()).to.deep.equal(expectedBoard)
