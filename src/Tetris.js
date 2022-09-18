@@ -131,23 +131,21 @@ class Tetris {
 const reverse = (arr) => () =>
   arr.map(array => [...array].reverse())
 
-  // What we need is:
-  // [1,1,1], => [1,1],
-  // [1,0,0], => [0,1],
-  //          => [0,1],
-
-  // Or:
-  // [1,1,1], => [1,0],
-  // [1,0,0], => [1,0],
-  //          => [1,1],
-
-  // But logic below does:
-  // [1,1,1], => [1,1],
-  // [1,0,0], => [1,0],
-  //          => [1,0],
+// For rotation, the transformation we need is:
+// [1,1,1], => [1,1],
+// [1,0,0], => [0,1],
+//          => [0,1],
+// Or:
+// [1,1,1], => [1,0],
+// [1,0,0], => [1,0],
+//          => [1,1],
+// But the logic below does:
+// [1,1,1], => [1,1],
+// [1,0,0], => [1,0],
+//          => [1,0],
+// ie. swapping first (height) index with second (width) results in counter-clockwise + vertically flipped transformation
+// (or you can consider it clockwise + horizontally flipped transformation)
 const flipIndices = (twoDArray) => {
-  // Swapping height with width results in counter-clockwise + vertically flipped transformation
-  // (or clockwise + horizontally flipped transformation)
   const newHeight = Grid.width(twoDArray)
   const newWidth = Grid.height(twoDArray)
 
