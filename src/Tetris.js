@@ -114,23 +114,18 @@ class Tetris {
   }
 
   clearLines() {
-    const { length: total } = this.board.filter(
-      row => row.filter(Boolean).length === this.width()
+    const incompleteLines = this.board.filter(
+      row => row.filter(Boolean).length !== this.width()
     )
 
-    if (total) {
-      this.trigger(Tetris.Events.LINE_CLEAR, { total })
+    const totalClearedLines = this.height() - incompleteLines.length
+
+    if (totalClearedLines) {
+      this.trigger(Tetris.Events.LINE_CLEAR, { total: totalClearedLines })
     }
 
-    const blankLines = Grid.blank(this.width(), total)
-
-    const newBoard = blankLines.concat(
-      this.board.filter(
-        row => row.filter(Boolean).length !== this.width()
-      )
-    )
-
-    this.board = newBoard
+    const newBlankLines = Grid.blank(this.width(), totalClearedLines)
+    this.board = newBlankLines.concat(incompleteLines)
   }
 
   compositeBoard() {
