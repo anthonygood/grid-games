@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { blank, debug, superimpose } = require('./Grid');
+const { blank, superimpose, debug } = require('./Grid');
 const { Tetris } = require('./Tetris');
 const { Tetromino } = Tetris
 
@@ -56,6 +56,49 @@ describe('Tetris', () => {
       [0,0,0,0],
       [0,0,0,0],
       [0,0,0,0],
+      [0,0,0,0],
+      [0,0,0,0],
+    ])
+  })
+
+  it('can reverse rotate tetromino', () => {
+    const tetris = new Tetris(4, 4)
+    tetris.spawn(Tetromino.L())
+    expect(tetris.compositeBoard()).to.deep.equal([
+      [0,1,1,1],
+      [0,1,0,0],
+      [0,0,0,0],
+      [0,0,0,0],
+    ])
+
+    tetris.rotate.reverse()
+    expect(tetris.compositeBoard()).to.deep.equal([
+      [0,1,0,0],
+      [0,1,0,0],
+      [0,1,1,0],
+      [0,0,0,0],
+    ])
+
+    tetris.rotate.reverse()
+    expect(tetris.compositeBoard()).to.deep.equal([
+      [0,0,0,1],
+      [0,1,1,1],
+      [0,0,0,0],
+      [0,0,0,0],
+    ])
+
+    tetris.rotate.reverse()
+    expect(tetris.compositeBoard()).to.deep.equal([
+      [0,1,1,0],
+      [0,0,1,0],
+      [0,0,1,0],
+      [0,0,0,0],
+    ])
+
+    tetris.rotate.reverse()
+    expect(tetris.compositeBoard()).to.deep.equal([
+      [0,1,1,1],
+      [0,1,0,0],
       [0,0,0,0],
       [0,0,0,0],
     ])

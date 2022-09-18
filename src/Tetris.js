@@ -3,6 +3,24 @@ const Grid = require('./Grid')
 Events = {}
 Events.TETROMINO_LANDING = 'tetromino:landing'
 
+const rotateTetromino = (tetris, rotateFn) => () => {
+  const prevWidth = Grid.width(tetris.tetromino)
+  const prevCentre = tetris.centre(prevWidth)
+
+  tetris.tetromino = rotateFn(tetris.tetromino)
+
+  // rotate position
+  const tetrominoWidth = Grid.width(tetris.tetromino)
+  const centre = tetris.centre(tetrominoWidth)
+  const [x, y] = tetris.tetrominoPosition
+
+  const centreDifference = prevCentre - centre
+  const newX = x + centreDifference
+
+  // TODO: y?
+  tetris.tetrominoPosition = [newX, y]
+}
+
 class Tetris {
   constructor(width = 10, height = 20) {
     this.board = Grid.blank(width, height)
@@ -11,6 +29,8 @@ class Tetris {
     this.eventListeners = {
       [Events.TETROMINO_LANDING]: []
     }
+    this.rotate = rotateTetromino(this, Tetris.Tetromino.rotate)
+    this.rotate.reverse = rotateTetromino(this, Tetris.Tetromino.rotate.reverse)
   }
 
   getSubscribers(event) {
@@ -46,23 +66,23 @@ class Tetris {
     this.tetrominoPosition = [tetrominoXOrigin, 0]
   }
 
-  rotate() {
-    const prevWidth = Grid.width(this.tetromino)
-    const prevCentre = this.centre(prevWidth)
+  // rotate(rotateFn = Tetris.Tetromino.rotate) {
+  //   const prevWidth = Grid.width(this.tetromino)
+  //   const prevCentre = this.centre(prevWidth)
 
-    this.tetromino = Tetris.Tetromino.rotate(this.tetromino)
+  //   this.tetromino = rotateFn(this.tetromino)
 
-    // rotate position
-    const tetrominoWidth = Grid.width(this.tetromino)
-    const centre = this.centre(tetrominoWidth)
-    const [x, y] = this.tetrominoPosition
+  //   // rotate position
+  //   const tetrominoWidth = Grid.width(this.tetromino)
+  //   const centre = this.centre(tetrominoWidth)
+  //   const [x, y] = this.tetrominoPosition
 
-    const centreDifference = prevCentre - centre
-    const newX = x + centreDifference
+  //   const centreDifference = prevCentre - centre
+  //   const newX = x + centreDifference
 
-    // TODO: y?
-    this.tetrominoPosition = [newX, y]
-  }
+  //   // TODO: y?
+  //   this.tetrominoPosition = [newX, y]
+  // }
 
   tick() {
     if (
@@ -127,13 +147,16 @@ class Tetris {
   }
 }
 
-const reverse = (arr) => () =>
+// Tetris.prototype.rotate
+// Tetris.prototype.rotate.reverse = Tetris.prototype.rotate.bind(null, Tetris.Tetromino.rotate.reverse)
+
+const reverse = arr => () =>
   arr.map(array => [...array].reverse())
 
 const rotate = grid => Grid.rotateClockwise(grid)
 rotate.reverse = Grid.rotateAntiClockwise
 
-const TetrominoFactory = (twoDArray) => {
+const TetrominoFactory = twoDArray => {
   fn = () => twoDArray
   fn.reverse = reverse(twoDArray)
   return fn
