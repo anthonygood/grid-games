@@ -28,80 +28,82 @@ describe('Tetris', () => {
     ])
   })
 
-  it('can rotate tetromino', () => {
-    const tetris = new Tetris(4, 6)
-    tetris.spawn(Tetromino.straight())
-    expect(tetris.compositeBoard()).to.deep.equal([
-      [1,1,1,1],
-      [0,0,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
-    ])
+  describe('rotation', () => {
+    it('can rotate tetromino', () => {
+      const tetris = new Tetris(4, 6)
+      tetris.spawn(Tetromino.straight())
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [1,1,1,1],
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
 
-    tetris.rotate()
-    expect(tetris.compositeBoard()).to.deep.equal([
-      [0,0,1,0],
-      [0,0,1,0],
-      [0,0,1,0],
-      [0,0,1,0],
-      [0,0,0,0],
-      [0,0,0,0],
-    ])
+      tetris.rotate()
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,1,0],
+        [0,0,1,0],
+        [0,0,1,0],
+        [0,0,1,0],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
 
-    tetris.rotate()
-    expect(tetris.compositeBoard()).to.deep.equal([
-      [1,1,1,1],
-      [0,0,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
-    ])
-  })
+      tetris.rotate()
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [1,1,1,1],
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
+    })
 
-  it('can reverse rotate tetromino', () => {
-    const tetris = new Tetris(4, 4)
-    tetris.spawn(Tetromino.L())
-    expect(tetris.compositeBoard()).to.deep.equal([
-      [0,1,1,1],
-      [0,1,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
-    ])
+    it('can reverse rotate tetromino', () => {
+      const tetris = new Tetris(4, 4)
+      tetris.spawn(Tetromino.L())
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,1,1,1],
+        [0,1,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
 
-    tetris.rotate.reverse()
-    expect(tetris.compositeBoard()).to.deep.equal([
-      [0,1,0,0],
-      [0,1,0,0],
-      [0,1,1,0],
-      [0,0,0,0],
-    ])
+      tetris.rotate.reverse()
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,1,0,0],
+        [0,1,0,0],
+        [0,1,1,0],
+        [0,0,0,0],
+      ])
 
-    tetris.rotate.reverse()
-    expect(tetris.compositeBoard()).to.deep.equal([
-      [0,0,0,1],
-      [0,1,1,1],
-      [0,0,0,0],
-      [0,0,0,0],
-    ])
+      tetris.rotate.reverse()
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,0,1],
+        [0,1,1,1],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
 
-    tetris.rotate.reverse()
-    expect(tetris.compositeBoard()).to.deep.equal([
-      [0,1,1,0],
-      [0,0,1,0],
-      [0,0,1,0],
-      [0,0,0,0],
-    ])
+      tetris.rotate.reverse()
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,1,1,0],
+        [0,0,1,0],
+        [0,0,1,0],
+        [0,0,0,0],
+      ])
 
-    tetris.rotate.reverse()
-    expect(tetris.compositeBoard()).to.deep.equal([
-      [0,1,1,1],
-      [0,1,0,0],
-      [0,0,0,0],
-      [0,0,0,0],
-    ])
+      tetris.rotate.reverse()
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,1,1,1],
+        [0,1,0,0],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
+    })
   })
 
   describe('blocks fall', () => {
