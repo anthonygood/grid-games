@@ -131,14 +131,29 @@ class Tetris {
 const reverse = (arr) => () =>
   arr.map(array => [...array].reverse())
 
+  // What we need is:
+  // [1,1,1], => [1,1],
+  // [1,0,0], => [0,1],
+  //          => [0,1],
+
+  // Or:
+  // [1,1,1], => [1,0],
+  // [1,0,0], => [1,0],
+  //          => [1,1],
+
+  // But logic below does:
+  // [1,1,1], => [1,1],
+  // [1,0,0], => [1,0],
+  //          => [1,0],
 const rotate = (twoDArray) => {
-  // Swapping height with width results in counter-clockwise transformation
+  // Swapping height with width results in counter-clockwise + vertically flipped transformation
+  // (or clockwise + horizontally flipped transformation)
   const newHeight = Grid.width(twoDArray)
   const newWidth = Grid.height(twoDArray)
 
   const newGrid = Grid.blank(newWidth, newHeight)
 
-  Grid.forEach(twoDArray, (cell, [i, j], row, grid) => {
+  Grid.forEach(twoDArray, (cell, [i, j], _row, _grid) => {
     newGrid[j][i] = cell
   })
 
@@ -150,7 +165,8 @@ const rotateClockwise = (twoDArray) =>
     rotate(twoDArray)
   )()
 
-rotateClockwise.reverse = grid => [].concat(rotate(grid)).reverse()
+// Undo vertical flip...
+rotateClockwise.reverse = twoDArray => rotate(twoDArray).reverse()
 
 const TetrominoFactory = (twoDArray) => {
   fn = () => twoDArray
