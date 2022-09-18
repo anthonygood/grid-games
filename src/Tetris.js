@@ -150,7 +150,7 @@ const rotateClockwise = (twoDArray) =>
     rotate(twoDArray)
   )()
 
-rotateClockwise.reverse = rotate
+rotateClockwise.reverse = grid => [].concat(rotate(grid)).reverse()
 
 const TetrominoFactory = (twoDArray) => {
   fn = () => twoDArray

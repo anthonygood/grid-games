@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { blank, superimpose } = require('./Grid');
+const { blank, debug, superimpose } = require('./Grid');
 const { Tetris } = require('./Tetris');
 const { Tetromino } = Tetris
 
@@ -254,7 +254,7 @@ describe('Tetris.Tetromino has tetrominoes', () => {
     expect(Tetromino.T()).to.deep.equal([
       [1,1,1],
       [0,1,0],
-    ]);
+    ])
   })
 
   it('L', () => {
@@ -268,7 +268,7 @@ describe('Tetris.Tetromino has tetrominoes', () => {
     expect(Tetromino.L.reverse()).to.deep.equal([
       [1,1,1],
       [0,0,1],
-    ]);
+    ])
   })
 
   it('skew', () => {
@@ -282,20 +282,20 @@ describe('Tetris.Tetromino has tetrominoes', () => {
     expect(Tetromino.skew.reverse()).to.deep.equal([
       [1,1,0],
       [0,1,1],
-    ]);
+    ])
   })
 
   it('square', () => {
     expect(Tetromino.square()).to.deep.equal([
       [1,1],
       [1,1],
-    ]);
+    ])
   })
 
   it('straight', () => {
     expect(Tetromino.straight()).to.deep.equal([
       [1,1,1,1],
-    ]);
+    ])
   })
 
   describe('and can rotate', () => {
@@ -308,7 +308,7 @@ describe('Tetris.Tetromino has tetrominoes', () => {
         [0,1],
         [1,1],
         [0,1],
-      ]);
+      ])
 
       expect(
         Tetromino.rotate(
@@ -319,8 +319,8 @@ describe('Tetris.Tetromino has tetrominoes', () => {
       ).to.deep.equal([
         [0,1,0],
         [1,1,1],
-      ]);
-    });
+      ])
+    })
 
     it('straight', () => {
       expect(
@@ -332,9 +332,33 @@ describe('Tetris.Tetromino has tetrominoes', () => {
         [1],
         [1],
         [1],
-      ]);
-    });
-  });
+      ])
+    })
+
+    it('L', () => {
+      expect(
+        Tetromino.rotate(
+          Tetromino.L()
+        )
+      ).to.deep.equal([
+        [1,1],
+        [0,1],
+        [0,1],
+      ])
+    })
+
+    it('skew', () => {
+      expect(
+        Tetromino.rotate(
+          Tetromino.skew()
+        )
+      ).to.deep.equal([
+        [1,0],
+        [1,1],
+        [0,1],
+      ])
+    })
+  })
 
   describe('and can reverse rotate', () => {
     it('L', () => {
@@ -346,7 +370,36 @@ describe('Tetris.Tetromino has tetrominoes', () => {
         [1,0],
         [1,0],
         [1,1],
-      ]);
-    });
+      ])
+    })
+
+    it('skew', () => {
+      debug(
+        Tetromino.rotate.reverse(
+          Tetromino.skew()
+        )
+      )
+      expect(
+        Tetromino.rotate.reverse(
+          Tetromino.skew()
+        )
+      ).to.deep.equal([
+        [1,0],
+        [1,1],
+        [0,1],
+      ])
+    })
+
+    it('T', () => {
+      expect(
+        Tetromino.rotate.reverse(
+          Tetromino.T()
+        )
+      ).to.deep.equal([
+        [1,0],
+        [1,1],
+        [1,0],
+      ])
+    })
   });
 });
