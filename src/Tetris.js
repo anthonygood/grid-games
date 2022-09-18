@@ -146,35 +146,34 @@ const reverse = (arr) => () =>
 // ie. swapping first (height) index with second (width) results in counter-clockwise + vertically flipped transformation
 // (or you can consider it clockwise + horizontally flipped transformation).
 // So depending on the transformation, we need to 'count backwards' on either the first or second index.
-const counterClockwise = (twoDArray) => {
+const rotation = transformIndicesFn => twoDArray => {
   // Swap height/width
   const newHeight = Grid.width(twoDArray)
   const newWidth = Grid.height(twoDArray)
-
-  const newGrid = Grid.blank(newWidth, newHeight)
-
-  Grid.forEach(twoDArray, (cell, [i, j], _row, _grid) => {
-    newGrid[newHeight - j - 1][i] = cell
-  })
-
-  return newGrid
-};
-
-const clockwise = (twoDArray) => {
-  // Swap height/width
-  const newHeight = Grid.width(twoDArray)
-  const newWidth = Grid.height(twoDArray)
-
-  const newGrid = Grid.blank(newWidth, newHeight)
+  const rotatedGrid = Grid.blank(newWidth, newHeight)
 
   Grid.forEach(twoDArray, (cell, [i, j], _row, _grid) => {
-    newGrid[j][newWidth - i - 1] = cell
+    const [index0, index1] = transformIndicesFn(i, j, newHeight, newWidth)
+    rotatedGrid[index0][index1] = cell
   })
 
-  return newGrid
-};
+  return rotatedGrid
+}
 
-clockwise.reverse = counterClockwise
+const clockwiseIndexTransform = (i, j, _height, width) =>
+  [
+    j,
+    width - 1 - i
+  ]
+
+const counterClockwiseIndexTransform = (i, j, height, _width) =>
+  [
+    height - 1 - j,
+    i
+  ]
+
+const clockwise = rotation(clockwiseIndexTransform)
+clockwise.reverse = rotation(counterClockwiseIndexTransform)
 
 const TetrominoFactory = (twoDArray) => {
   fn = () => twoDArray
