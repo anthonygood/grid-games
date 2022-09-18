@@ -145,7 +145,7 @@ const reverse = (arr) => () =>
   // [1,1,1], => [1,1],
   // [1,0,0], => [1,0],
   //          => [1,0],
-const rotate = (twoDArray) => {
+const flipIndices = (twoDArray) => {
   // Swapping height with width results in counter-clockwise + vertically flipped transformation
   // (or clockwise + horizontally flipped transformation)
   const newHeight = Grid.width(twoDArray)
@@ -162,11 +162,11 @@ const rotate = (twoDArray) => {
 
 const rotateClockwise = (twoDArray) =>
   reverse(
-    rotate(twoDArray)
+    flipIndices(twoDArray)
   )()
 
 // Undo vertical flip...
-rotateClockwise.reverse = twoDArray => rotate(twoDArray).reverse()
+rotateClockwise.reverse = twoDArray => flipIndices(twoDArray).reverse()
 
 const TetrominoFactory = (twoDArray) => {
   fn = () => twoDArray

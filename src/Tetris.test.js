@@ -374,11 +374,6 @@ describe('Tetris.Tetromino has tetrominoes', () => {
     })
 
     it('skew', () => {
-      debug(
-        Tetromino.rotate.reverse(
-          Tetromino.skew()
-        )
-      )
       expect(
         Tetromino.rotate.reverse(
           Tetromino.skew()
