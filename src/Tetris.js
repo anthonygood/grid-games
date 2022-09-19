@@ -73,7 +73,6 @@ class Tetris {
     if (collisionDetected) {
       this.tetrominoPosition = [tetrominoXOrigin, -1]
       this.board = this.compositeBoard({ crop: true })
-      Grid.debug(this.board)
       this.trigger(Events.GAME_OVER)
     }
   }
