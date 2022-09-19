@@ -3,6 +3,7 @@ const Grid = require('./Grid')
 Events = {}
 Events.TETROMINO_LANDING = 'tetromino:landing'
 Events.LINE_CLEAR = 'lineclear'
+Events.GAME_OVER = 'gameover'
 
 const rotateTetromino = (tetris, rotateFn) => () => {
   const prevWidth = Grid.width(tetris.tetromino)
@@ -30,6 +31,7 @@ class Tetris {
     this.eventListeners = {
       [Events.TETROMINO_LANDING]: [],
       [Events.LINE_CLEAR]: [],
+      [Events.GAME_OVER]: [],
     }
     this.rotate = rotateTetromino(this, Tetris.Tetromino.rotate)
     this.rotate.reverse = rotateTetromino(this, Tetris.Tetromino.rotate.reverse)
@@ -66,6 +68,14 @@ class Tetris {
     const tetrominoWidth = Grid.width(twoDArray)
     const tetrominoXOrigin = this.centre() - this.centre(tetrominoWidth)
     this.tetrominoPosition = [tetrominoXOrigin, 0]
+
+    const collisionDetected = this.detectCollisions(twoDArray, ...this.tetrominoPosition)
+    if (collisionDetected) {
+      this.tetrominoPosition = [tetrominoXOrigin, -1]
+      this.board = this.compositeBoard({ crop: true })
+      Grid.debug(this.board)
+      this.trigger(Events.GAME_OVER)
+    }
   }
 
   tick() {
@@ -87,6 +97,16 @@ class Tetris {
     return [x, newY]
   }
 
+  detectCollisions(tetromino, ...nextTetrominoPosition) {
+    // Generate a superimposition of the tetromino on a blank board
+    const blankBoard = Grid.blank(this.width(), this.height())
+    const tetrominoBoard = Grid.superimpose(blankBoard, tetromino, ...nextTetrominoPosition)
+
+    // Add the superimposed board and the current board together
+    const collisionBoard = Grid.add(this.board, tetrominoBoard)
+    return collisionBoard.flat().some(value => value > 1)
+  }
+
   tetrominoHasLandedOnTerrain() {
     const {
       board,
@@ -95,16 +115,7 @@ class Tetris {
 
     // Get the position of the tetromino for the next tick
     const nextTetrominoPosition = this.gravity()
-
-    // Generate a superimposition of the tetromino on a blank board
-    const blankBoard = Grid.blank(this.width(), this.height())
-    const tetrominoBoard = Grid.superimpose(blankBoard, tetromino, ...nextTetrominoPosition)
-
-    // Add the superimposed board and the current board together
-    const collisionBoard = Grid.add(board, tetrominoBoard)
-
-    // If there are any values above 1, it means those cells would overlap on the next tick
-    return collisionBoard.flat().some(value => value > 1)
+    return this.detectCollisions(tetromino, ...nextTetrominoPosition)
   }
 
   tetrominoHasReachedBottom() {
@@ -128,13 +139,12 @@ class Tetris {
     this.board = newBlankLines.concat(incompleteLines)
   }
 
-  compositeBoard() {
+  compositeBoard({ crop = false } = {}) {
     if (!this.tetromino) {
       return this.board
     }
 
-    const [x, y] = this.tetrominoPosition
-    return Grid.superimpose(this.board, this.tetromino, x, y)
+    return Grid.superimpose(this.board, this.tetromino, ...this.tetrominoPosition, { crop })
   }
 
   height() {

@@ -131,7 +131,7 @@ const add = combineGrids((a = 0, b = 0) => a + b);
 // NB. the returned grid is the size of the union of grids, but values are intersection
 const intersection = combineGrids((a = 0, b = 0) => a && b);
 
-const superimpose = (main, imposed, x, y) => {
+const superimpose = (main, imposed, x, y, { crop } = {}) => {
   const w = width(main)
   const h = height(main)
   const imposedGrid = blank(w, h)
@@ -140,7 +140,8 @@ const superimpose = (main, imposed, x, y) => {
     const yIndex = i + y;
     const xIndex = j + x;
 
-    if (yIndex >= h || xIndex >= w) {
+    if (yIndex >= h || xIndex >= w || yIndex < 0 || xIndex < 0) {
+      if (crop) return
       throw new Error('Superimposed grid would be out of bounds')
     }
     imposedGrid[yIndex][xIndex] = cell;

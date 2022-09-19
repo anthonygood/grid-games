@@ -408,6 +408,42 @@ describe('Tetris', () => {
         })
       })
     })
+
+    describe('when there is no space for a tetromino to spawn', () => {
+      it('emits a gameover event', () => {
+        const tetris = new Tetris(3, 4)
+        let gameover = false
+        tetris.on('gameover', () => gameover = true)
+
+        tetris.board = [
+          [0,0,0,0],
+          [1,1,0,1],
+          [1,1,0,1],
+        ]
+
+        tetris.spawn(Tetromino.square())
+
+        expect(gameover).to.equal(true)
+      })
+
+      it('neatly crops overflowing spawned tetromino', () => {
+        const tetris = new Tetris(3, 4)
+
+        tetris.board = [
+          [0,0,0,0],
+          [1,1,0,1],
+          [1,1,0,1],
+        ]
+
+        tetris.spawn(Tetromino.square())
+
+        expect(tetris.board).to.deep.equal([
+          [0,1,1,0],
+          [1,1,0,1],
+          [1,1,0,1],
+        ])
+      })
+    })
   })
 })
 
