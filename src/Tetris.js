@@ -125,10 +125,10 @@ class Tetris {
 
   clearLines() {
     const incompleteLines = this.board.filter(
-      row => row.filter(Boolean).length !== this.width()
+      row => row.some(cell => cell === 0)
     )
 
-    if (!incompleteLines.length) return
+    if (!incompleteLines.length === this.height()) return
 
     const metadata = this.board.reduce((data, row, currentIndex) => {
       const lineclear = row.filter(Boolean).length === this.width()
@@ -145,22 +145,19 @@ class Tetris {
       }
     })
 
-    const newBlankLines = Grid.blank(this.width(), metadata.total)
-    this.board = newBlankLines.concat(incompleteLines)
-    metadata.board.after = this.board
-
-    let completedLinesBoard = Grid.blank(this.width(), this.height())
-    metadata.indices.forEach(index => {
-      const line = Grid.blank(this.width(), 1, 1)
-      completedLinesBoard = Grid.superimpose(completedLinesBoard, line, 0, index)
+    metadata.board.completedLines = this.board.map((_row, index) => {
+      const isClear = metadata.indices.includes(index)
+      const filler = isClear ? 1 : 0
+      return new Array(this.width()).fill(filler)
     })
-    metadata.board.completedLines = completedLinesBoard
 
+    // metadata.board.completedLines = this.board.map(row => row.filter(Boolean).length)
+    const newBlankLines = Grid.blank(this.width(), metadata.total)
+    this.board = metadata.board.after = newBlankLines.concat(incompleteLines)
     this.trigger(
       Tetris.Events.LINE_CLEAR,
       metadata
     )
-  
   }
 
   compositeBoard({ crop = false } = {}) {
