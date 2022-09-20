@@ -348,12 +348,13 @@ describe('Tetris', () => {
 
       it('emits a lineclear event for a single line', () => {
         const tetris = new Tetris(4, 5)
-        let lineCount = null
-        tetris.on('lineclear', ({ total }) => {
-          lineCount = total
+
+        let payload = null
+        tetris.on('lineclear', (event) => {
+          payload = event
         })
 
-        tetris.board = [
+        const board = [
           [0,0,0,0],
           [0,0,0,0],
           [0,1,0,0],
@@ -361,8 +362,26 @@ describe('Tetris', () => {
           [1,1,1,0],
         ]
 
+        tetris.board = [].concat(board)
+
         tetris.clearLines()
-        expect(lineCount).to.equal(1)
+        expect(payload.total).to.equal(1)
+        expect(payload.indices).to.deep.equal([3])
+        expect(payload.board.before).to.deep.equal(board)
+        expect(payload.board.after).to.deep.equal([
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,1,0,0],
+          [1,1,1,0],
+        ])
+        expect(payload.board.completedLines).to.deep.equal([
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,0,0,0],
+          [1,1,1,1],
+          [0,0,0,0],
+        ])
       })
 
       it('clears multiple lines', () => {
@@ -406,6 +425,43 @@ describe('Tetris', () => {
           [0,0,0,0],
           [1,0,1,0],
           [1,1,0,1],
+        ])
+      })
+
+      it('lineclear event payload includes number of lines, line indices, and board with lines', () => {
+        const tetris = new Tetris(4, 5)
+
+        let payload = null
+        tetris.on('lineclear', (event) => {
+          payload = event
+        })
+
+        const board = tetris.board = [
+          [1,0,1,0],
+          [1,1,1,1],
+          [1,1,0,1],
+          [1,1,1,1],
+          [1,1,1,1],
+        ]
+
+        tetris.clearLines()
+
+        expect(payload.total).to.equal(3)
+        expect(payload.indices).to.deep.equal([1,3,4])
+        expect(payload.board.before).to.deep.equal(board)
+        expect(payload.board.after).to.deep.equal([
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,0,0,0],
+          [1,0,1,0],
+          [1,1,0,1],
+        ])
+        expect(payload.board.completedLines).to.deep.equal([
+          [0,0,0,0],
+          [1,1,1,1],
+          [0,0,0,0],
+          [1,1,1,1],
+          [1,1,1,1],
         ])
       })
 

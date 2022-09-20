@@ -128,14 +128,39 @@ class Tetris {
       row => row.filter(Boolean).length !== this.width()
     )
 
-    const totalClearedLines = this.height() - incompleteLines.length
+    if (!incompleteLines.length) return
 
-    if (totalClearedLines) {
-      this.trigger(Tetris.Events.LINE_CLEAR, { total: totalClearedLines })
-    }
+    const metadata = this.board.reduce((data, row, currentIndex) => {
+      const lineclear = row.filter(Boolean).length === this.width()
+      if (lineclear) {
+        data.total += 1
+        data.indices.push(currentIndex)
+      }
+      return data
+    }, {
+      total: 0,
+      indices: [],
+      board: {
+        before: [...this.board],
+      }
+    })
 
-    const newBlankLines = Grid.blank(this.width(), totalClearedLines)
+    const newBlankLines = Grid.blank(this.width(), metadata.total)
     this.board = newBlankLines.concat(incompleteLines)
+    metadata.board.after = this.board
+
+    let completedLinesBoard = Grid.blank(this.width(), this.height())
+    metadata.indices.forEach(index => {
+      const line = Grid.blank(this.width(), 1, 1)
+      completedLinesBoard = Grid.superimpose(completedLinesBoard, line, 0, index)
+    })
+    metadata.board.completedLines = completedLinesBoard
+
+    this.trigger(
+      Tetris.Events.LINE_CLEAR,
+      metadata
+    )
+  
   }
 
   compositeBoard({ crop = false } = {}) {
@@ -158,9 +183,6 @@ class Tetris {
     return Math.floor(width / 2)
   }
 }
-
-// Tetris.prototype.rotate
-// Tetris.prototype.rotate.reverse = Tetris.prototype.rotate.bind(null, Tetris.Tetromino.rotate.reverse)
 
 const reverse = arr => () =>
   arr.map(array => [...array].reverse())
