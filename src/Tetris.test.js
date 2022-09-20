@@ -387,6 +387,28 @@ describe('Tetris', () => {
         ])
       })
 
+      it('correctly clears non-contiguous lines', () => {
+        const tetris = new Tetris(4, 5)
+
+        tetris.board = [
+          [1,0,1,0],
+          [1,1,1,1],
+          [1,1,0,1],
+          [1,1,1,1],
+          [1,1,1,1],
+        ]
+
+        tetris.clearLines()
+
+        expect(tetris.compositeBoard()).to.deep.equal([
+          [0,0,0,0],
+          [0,0,0,0],
+          [0,0,0,0],
+          [1,0,1,0],
+          [1,1,0,1],
+        ])
+      })
+
       it('emits an event for multiple lines', () => {
         it('clears multiple lines', () => {
           const tetris = new Tetris(4, 5)
