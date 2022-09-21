@@ -106,6 +106,99 @@ describe('Tetris', () => {
     })
   })
 
+  // describe('moving', () => {
+  //   it('can move tetromino left', () => {
+  //     const tetris = new Tetris(4, 4)
+  //     tetris.spawn(Tetromino.L.reverse())
+
+  //     expect(tetris.compositeBoard()).to.deep.equal([
+  //       [0,1,1,1],
+  //       [0,0,0,1],
+  //       [0,0,0,0],
+  //       [0,0,0,0],
+  //     ])
+
+  //     tetris.move.left()
+
+  //     expect(tetris.compositeBoard()).to.deep.equal([
+  //       [1,1,1,0],
+  //       [0,0,1,0],
+  //       [0,0,0,0],
+  //       [0,0,0,0],
+  //     ])
+  //   })
+
+  //   it('can move tetromino right', () => {
+  //     const tetris = new Tetris(5, 4)
+  //     tetris.spawn(Tetromino.skew.reverse())
+
+  //     expect(tetris.compositeBoard()).to.deep.equal([
+  //       [0,1,1,0,0],
+  //       [0,0,1,1,0],
+  //       [0,0,0,0,0],
+  //       [0,0,0,0,0],
+  //     ])
+
+  //     tetris.move.right()
+
+  //     expect(tetris.compositeBoard()).to.deep.equal([
+  //       [0,0,1,1,0],
+  //       [0,0,0,1,1],
+  //       [0,0,0,0,0],
+  //       [0,0,0,0,0],
+  //     ])
+  //   })
+
+  //   it('can move tetromino down', () => {
+  //     const tetris = new Tetris(4, 4)
+  //     tetris.spawn(Tetromino.square())
+
+  //     expect(tetris.compositeBoard()).to.deep.equal([
+  //       [0,1,1,0],
+  //       [0,1,1,0],
+  //       [0,0,0,0],
+  //       [0,0,0,0],
+  //     ])
+
+  //     tetris.move.down()
+
+  //     expect(tetris.compositeBoard()).to.deep.equal([
+  //       [0,0,0,0],
+  //       [0,1,1,0],
+  //       [0,1,1,0],
+  //       [0,0,0,0],
+  //     ])
+  //   })
+
+  //   it('does not move tetromino out of bounds', () => {
+  //     const tetris = new Tetris(4, 4)
+  //     tetris.spawn(Tetromino.L.reverse())
+
+  //     const boardStart = [
+  //       [0,1,1,1],
+  //       [0,0,0,1],
+  //       [0,0,0,0],
+  //       [0,0,0,0],
+  //     ]
+
+  //     expect(tetris.compositeBoard()).to.deep.equal(boardStart)
+
+  //     tetris.move.right()
+
+  //     expect(tetris.compositeBoard()).to.deep.equal(boardStart)
+
+  //     tetris.move.left()
+  //     tetris.move.left()
+
+  //     expect(tetris.compositeBoard()).to.deep.equal([
+  //       [1,1,1,0],
+  //       [0,0,1,0],
+  //       [0,0,0,0],
+  //       [0,0,0,0],
+  //     ])
+  //   })
+  // })
+
   describe('blocks fall', () => {
     it('ticks enact gravity, causing tetromino to fall by one cell', () => {
       const tetris = new Tetris(4, 5)
@@ -408,41 +501,40 @@ describe('Tetris', () => {
         })
       })
     })
+  })
+  describe('when there is no space for a tetromino to spawn', () => {
+    it('emits a gameover event', () => {
+      const tetris = new Tetris(3, 4)
+      let gameover = false
+      tetris.on('gameover', () => gameover = true)
 
-    describe('when there is no space for a tetromino to spawn', () => {
-      it('emits a gameover event', () => {
-        const tetris = new Tetris(3, 4)
-        let gameover = false
-        tetris.on('gameover', () => gameover = true)
+      tetris.board = [
+        [0,0,0,0],
+        [1,1,0,1],
+        [1,1,0,1],
+      ]
 
-        tetris.board = [
-          [0,0,0,0],
-          [1,1,0,1],
-          [1,1,0,1],
-        ]
+      tetris.spawn(Tetromino.square())
 
-        tetris.spawn(Tetromino.square())
+      expect(gameover).to.equal(true)
+    })
 
-        expect(gameover).to.equal(true)
-      })
+    it('neatly crops overflowing spawned tetromino', () => {
+      const tetris = new Tetris(3, 4)
 
-      it('neatly crops overflowing spawned tetromino', () => {
-        const tetris = new Tetris(3, 4)
+      tetris.board = [
+        [0,0,0,0],
+        [1,1,0,1],
+        [1,1,0,1],
+      ]
 
-        tetris.board = [
-          [0,0,0,0],
-          [1,1,0,1],
-          [1,1,0,1],
-        ]
+      tetris.spawn(Tetromino.square())
 
-        tetris.spawn(Tetromino.square())
-
-        expect(tetris.board).to.deep.equal([
-          [0,1,1,0],
-          [1,1,0,1],
-          [1,1,0,1],
-        ])
-      })
+      expect(tetris.board).to.deep.equal([
+        [0,1,1,0],
+        [1,1,0,1],
+        [1,1,0,1],
+      ])
     })
   })
 })

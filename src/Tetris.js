@@ -90,6 +90,24 @@ class Tetris {
     this.tetrominoPosition = this.gravity()
   }
 
+  get move() {
+    const that = this
+    return {
+      // TODO: bounds checking
+      left() {
+        const [x, y] = that.tetrominoPosition
+        return that.tetrominoPosition = [x - 1, y]
+      },
+      right() {
+        const [x, y] = that.tetrominoPosition
+        return that.tetrominoPosition = [x + 1, y]
+      },
+      down() {
+        return that.tetrominoPosition = that.gravity()
+      }
+    }
+  }
+
   gravity() {
     const [x, y] = this.tetrominoPosition
     const newY = y + 1
@@ -158,9 +176,6 @@ class Tetris {
     return Math.floor(width / 2)
   }
 }
-
-// Tetris.prototype.rotate
-// Tetris.prototype.rotate.reverse = Tetris.prototype.rotate.bind(null, Tetris.Tetromino.rotate.reverse)
 
 const reverse = arr => () =>
   arr.map(array => [...array].reverse())
