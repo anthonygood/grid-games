@@ -1,7 +1,9 @@
 const Grid = require('./Grid')
 
 Events = {}
+Events.TETROMINO_SPAWN = 'tetromino:spawn'
 Events.TETROMINO_LANDING = 'tetromino:landing'
+Events.TICK = 'tick'
 Events.LINE_CLEAR = 'lineclear'
 Events.GAME_OVER = 'gameover'
 
@@ -28,7 +30,10 @@ class Tetris {
     this.board = Grid.blank(width, height)
     this.tetromino = null
     this.tetrominoPosition = null
+    this.ticks = 0
     this.eventListeners = {
+      [Events.TICK]: [],
+      [Events.TETROMINO_SPAWN]: [],
       [Events.TETROMINO_LANDING]: [],
       [Events.LINE_CLEAR]: [],
       [Events.GAME_OVER]: [],
@@ -57,6 +62,10 @@ class Tetris {
     subscribers.forEach(subscriber => subscriber(payload))
   }
 
+  start() {
+    this.spawn()
+  }
+
   spawn(twoDArray = this.randomTetromino()) {
     if (!twoDArray || !twoDArray.length || !twoDArray[0].length) {
       throw new TypeError('Must provide two dimensional array representing tetromino to spawn')
@@ -64,6 +73,7 @@ class Tetris {
 
     // TODO: More validations
     this.tetromino = twoDArray
+    this.trigger(Events.TETROMINO_SPAWN, { tetromino: twoDArray })
 
     const tetrominoWidth = Grid.width(twoDArray)
     const tetrominoXOrigin = this.centre() - this.centre(tetrominoWidth)
@@ -73,7 +83,7 @@ class Tetris {
     if (collisionDetected) {
       this.tetrominoPosition = [tetrominoXOrigin, -1]
       this.board = this.compositeBoard({ crop: true })
-      this.trigger(Events.GAME_OVER)
+      this.trigger(Events.GAME_OVER, { board: this.board, ticks: this.ticks })
     }
   }
 
@@ -88,6 +98,7 @@ class Tetris {
     }
 
     this.tetrominoPosition = this.gravity()
+    this.trigger(Events.TICK, { board: this.board, ticks: ++this.ticks })
   }
 
   gravity() {
@@ -154,6 +165,7 @@ class Tetris {
       }
       return data
     }, {
+      ticks: this.ticks,
       total: 0,
       indices: [],
       board: {
