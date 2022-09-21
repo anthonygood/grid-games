@@ -102,13 +102,14 @@ class Tetris {
   }
 
   _move(...position) {
-    try {
-      this.detectCollisions(this.tetromino, ...position)
-      this.tetrominoPosition = position
-      return true
-    } catch (err) {
+    const collides = this.detectCollisions(this.tetromino, ...position)
+
+    if (this.detectCollisions(this.tetromino, ...position)) {
       return false
     }
+
+    this.tetrominoPosition = position
+    return true
   }
 
   get move() {
@@ -129,6 +130,11 @@ class Tetris {
     }
   }
 
+  drop() {
+    while (this.move.down()) {}
+    this.tick()
+  }
+
   gravity() {
     const [x, y] = this.tetrominoPosition
     const newY = y + 1
@@ -138,7 +144,15 @@ class Tetris {
   detectCollisions(tetromino, ...nextTetrominoPosition) {
     // Generate a superimposition of the tetromino on a blank board
     const blankBoard = Grid.blank(this.width(), this.height())
-    const tetrominoBoard = Grid.superimpose(blankBoard, tetromino, ...nextTetrominoPosition)
+
+    let tetrominoBoard
+    try {
+      tetrominoBoard = Grid.superimpose(blankBoard, tetromino, ...nextTetrominoPosition)
+    } catch (err) {
+      // Out of bounds is considered a collision
+      return true
+    }
+
 
     // Add the superimposed board and the current board together
     const collisionBoard = Grid.add(this.board, tetrominoBoard)
