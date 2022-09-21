@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const { blank, superimpose, debug } = require('./Grid');
+const { blank, superimpose, debug, map } = require('./Grid');
 const { Tetris } = require('./Tetris');
 const { Tetromino } = Tetris
 
@@ -26,6 +26,27 @@ describe('Tetris', () => {
       [0,0,0,0],
       [0,0,0,0],
     ])
+  })
+
+  describe('randomTetromino', () => {
+    it('returns a random tetromino', () => {
+      const tetris = new Tetris()
+      const tetromino = tetris.randomTetromino()
+
+      expect([
+        Tetromino.L(),
+        Tetromino.L.reverse(),
+
+        Tetromino.T(),
+        Tetromino.T.reverse(),
+
+        Tetromino.skew(),
+        Tetromino.skew.reverse(),
+
+        Tetromino.square(),
+        Tetromino.straight(),
+      ].map(tet => tet.join(':'))).to.include(tetromino.join(':'))
+    })
   })
 
   describe('rotation', () => {

@@ -57,7 +57,7 @@ class Tetris {
     subscribers.forEach(subscriber => subscriber(payload))
   }
 
-  spawn(twoDArray) {
+  spawn(twoDArray = this.randomTetromino()) {
     if (!twoDArray || !twoDArray.length || !twoDArray[0].length) {
       throw new TypeError('Must provide two dimensional array representing tetromino to spawn')
     }
@@ -104,6 +104,22 @@ class Tetris {
     // Add the superimposed board and the current board together
     const collisionBoard = Grid.add(this.board, tetrominoBoard)
     return collisionBoard.flat().some(value => value > 1)
+  }
+
+  randomTetromino() {
+    const { Tetromino } = Tetris
+    const tetrominoes = [
+      Tetromino.L,
+      Tetromino.T,
+      Tetromino.skew,
+      Tetromino.square,
+      Tetromino.straight,
+    ]
+    const selected = Math.floor(Math.random() * tetrominoes.length)
+    const reverse = !!Math.floor(Math.random() * 2)
+
+    const tetromino = tetrominoes[selected]
+    return reverse ? tetromino.reverse() : tetromino()
   }
 
   tetrominoHasLandedOnTerrain() {
