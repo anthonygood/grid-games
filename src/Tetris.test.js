@@ -127,98 +127,101 @@ describe('Tetris', () => {
     })
   })
 
-  // describe('moving', () => {
-  //   it('can move tetromino left', () => {
-  //     const tetris = new Tetris(4, 4)
-  //     tetris.spawn(Tetromino.L.reverse())
+  describe('moving', () => {
+    it('can move tetromino left', () => {
+      const tetris = new Tetris(6, 4)
+      tetris.spawn(Tetromino.L.reverse())
 
-  //     expect(tetris.compositeBoard()).to.deep.equal([
-  //       [0,1,1,1],
-  //       [0,0,0,1],
-  //       [0,0,0,0],
-  //       [0,0,0,0],
-  //     ])
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,1,1,1,0],
+        [0,0,0,0,1,0],
+        [0,0,0,0,0,0],
+        [0,0,0,0,0,0],
+      ])
 
-  //     tetris.move.left()
+      const moved = tetris.move.left()
 
-  //     expect(tetris.compositeBoard()).to.deep.equal([
-  //       [1,1,1,0],
-  //       [0,0,1,0],
-  //       [0,0,0,0],
-  //       [0,0,0,0],
-  //     ])
-  //   })
+      expect(moved).to.equal(true)
 
-  //   it('can move tetromino right', () => {
-  //     const tetris = new Tetris(5, 4)
-  //     tetris.spawn(Tetromino.skew.reverse())
 
-  //     expect(tetris.compositeBoard()).to.deep.equal([
-  //       [0,1,1,0,0],
-  //       [0,0,1,1,0],
-  //       [0,0,0,0,0],
-  //       [0,0,0,0,0],
-  //     ])
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,1,1,1,0,0],
+        [0,0,0,1,0,0],
+        [0,0,0,0,0,0],
+        [0,0,0,0,0,0],
+      ])
+    })
 
-  //     tetris.move.right()
+    it('can move tetromino right', () => {
+      const tetris = new Tetris(6, 4)
+      tetris.spawn(Tetromino.skew.reverse())
 
-  //     expect(tetris.compositeBoard()).to.deep.equal([
-  //       [0,0,1,1,0],
-  //       [0,0,0,1,1],
-  //       [0,0,0,0,0],
-  //       [0,0,0,0,0],
-  //     ])
-  //   })
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,1,1,0,0],
+        [0,0,0,1,1,0],
+        [0,0,0,0,0,0],
+        [0,0,0,0,0,0],
+      ])
 
-  //   it('can move tetromino down', () => {
-  //     const tetris = new Tetris(4, 4)
-  //     tetris.spawn(Tetromino.square())
+      tetris.move.right()
 
-  //     expect(tetris.compositeBoard()).to.deep.equal([
-  //       [0,1,1,0],
-  //       [0,1,1,0],
-  //       [0,0,0,0],
-  //       [0,0,0,0],
-  //     ])
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,0,1,1,0],
+        [0,0,0,0,1,1],
+        [0,0,0,0,0,0],
+        [0,0,0,0,0,0],
+      ])
+    })
 
-  //     tetris.move.down()
+    it('can move tetromino down', () => {
+      const tetris = new Tetris(4, 4)
+      tetris.spawn(Tetromino.square())
 
-  //     expect(tetris.compositeBoard()).to.deep.equal([
-  //       [0,0,0,0],
-  //       [0,1,1,0],
-  //       [0,1,1,0],
-  //       [0,0,0,0],
-  //     ])
-  //   })
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,1,1,0],
+        [0,1,1,0],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
 
-  //   it('does not move tetromino out of bounds', () => {
-  //     const tetris = new Tetris(4, 4)
-  //     tetris.spawn(Tetromino.L.reverse())
+      tetris.move.down()
 
-  //     const boardStart = [
-  //       [0,1,1,1],
-  //       [0,0,0,1],
-  //       [0,0,0,0],
-  //       [0,0,0,0],
-  //     ]
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,0,0],
+        [0,1,1,0],
+        [0,1,1,0],
+        [0,0,0,0],
+      ])
+    })
 
-  //     expect(tetris.compositeBoard()).to.deep.equal(boardStart)
+    it('does not move tetromino out of bounds', () => {
+      const tetris = new Tetris(4, 4)
+      tetris.spawn(Tetromino.L.reverse())
 
-  //     tetris.move.right()
+      const boardStart = [
+        [0,1,1,1],
+        [0,0,0,1],
+        [0,0,0,0],
+        [0,0,0,0],
+      ]
 
-  //     expect(tetris.compositeBoard()).to.deep.equal(boardStart)
+      expect(tetris.compositeBoard()).to.deep.equal(boardStart)
 
-  //     tetris.move.left()
-  //     tetris.move.left()
+      tetris.move.right()
 
-  //     expect(tetris.compositeBoard()).to.deep.equal([
-  //       [1,1,1,0],
-  //       [0,0,1,0],
-  //       [0,0,0,0],
-  //       [0,0,0,0],
-  //     ])
-  //   })
-  // })
+      expect(tetris.compositeBoard()).to.deep.equal(boardStart)
+
+      tetris.move.left()
+      tetris.move.left()
+
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [1,1,1,0],
+        [0,0,1,0],
+        [0,0,0,0],
+        [0,0,0,0],
+      ])
+    })
+  })
 
   describe('blocks fall', () => {
     it('ticks enact gravity, causing tetromino to fall by one cell', () => {

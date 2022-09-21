@@ -101,20 +101,30 @@ class Tetris {
     this.trigger(Events.TICK, { board: this.board, ticks: ++this.ticks })
   }
 
+  _move(...position) {
+    try {
+      this.detectCollisions(this.tetromino, ...position)
+      this.tetrominoPosition = position
+      return true
+    } catch (err) {
+      return false
+    }
+  }
+
   get move() {
     const that = this
     return {
       // TODO: bounds checking
       left() {
         const [x, y] = that.tetrominoPosition
-        return that.tetrominoPosition = [x - 1, y]
+        return that._move(x - 1, y)
       },
       right() {
         const [x, y] = that.tetrominoPosition
-        return that.tetrominoPosition = [x + 1, y]
+        return that._move(x + 1, y)
       },
       down() {
-        return that.tetrominoPosition = that.gravity()
+        return that._move(...that.gravity())
       }
     }
   }
