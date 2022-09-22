@@ -117,12 +117,22 @@ class Tetris {
   }
 
   tick() {
+    if (this.clearLines()) return
+
     // Handle landings
     if (
       this.tetrominoHasReachedBottom() ||
       this.tetrominoHasLandedOnTerrain()
     ) {
-      this.trigger(Events.TETROMINO_LANDING)
+      this.trigger(
+        Events.TETROMINO_LANDING,
+        {
+          ticks: this.ticks,
+          tetromino: this.tetromino,
+          position: this.tetrominoPosition,
+          projectedPosition: getTetrominoTopLeftFromOrigin(this)
+        }
+      )
       this.board = this.compositeBoard()
       this.tetromino = null
       return
@@ -242,7 +252,7 @@ class Tetris {
       row => row.some(cell => cell === 0)
     )
 
-    if (!incompleteLines.length === this.height()) return
+    if (incompleteLines.length === this.height()) return false
 
     const metadata = this.board.reduce((data, row, currentIndex) => {
       const lineclear = row.filter(Boolean).length === this.width()
@@ -273,6 +283,7 @@ class Tetris {
       Tetris.Events.LINE_CLEAR,
       metadata
     )
+    return true
   }
 
   compositeBoard() {

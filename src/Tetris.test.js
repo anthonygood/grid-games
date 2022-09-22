@@ -1,6 +1,6 @@
-const { expect } = require('chai');
-const { blank, superimpose, debug, map } = require('./Grid');
-const { Tetris } = require('./Tetris');
+const { expect } = require('chai')
+const { blank, superimpose, debug, map } = require('./Grid')
+const { Tetris } = require('./Tetris')
 const { Tetromino } = Tetris
 
 describe('Tetris', () => {
