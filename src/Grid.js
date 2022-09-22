@@ -1,4 +1,7 @@
-const debug = grid => grid.forEach(row => console.log(row))
+const debug = (grid, stringify = false) => {
+  const valueFn = arr => stringify ? arr.join(',') : arr
+  grid.map(valueFn).forEach(val => console.log(val))
+}
 
 const blank = (width, height, filler = 0) => {
   return Array.from({ length: height })

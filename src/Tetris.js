@@ -7,23 +7,40 @@ Events.TICK = 'tick'
 Events.LINE_CLEAR = 'lineclear'
 Events.GAME_OVER = 'gameover'
 
-const rotateTetromino = (tetris, rotateFn) => () => {
-  const prevWidth = Grid.width(tetris.tetromino)
-  const prevCentre = tetris.centre(prevWidth)
+const clamp = (min, max, x) =>
+  Math.max(
+    Math.min(
+      x,
+      max,
+    ),
+    min
+  )
 
-  tetris.tetromino = rotateFn(tetris.tetromino)
+// For controlling, Tetromino's origin should be center,
+// but we draw from the top left
+const getTetrominoTopLeftFromOrigin = (
+  tetris,
+  tetromino = tetris.tetromino,
+  tetrominoPosition = tetris.tetrominoPosition
+) => {
+  const [originX, originY] = tetrominoPosition
+  const width = Grid.width(tetromino)
+  const height = Grid.height(tetromino)
+  const x = originX - tetris.centre(width)
+  const y = originY - tetris.centre(height)
 
-  // rotate position
-  const tetrominoWidth = Grid.width(tetris.tetromino)
-  const centre = tetris.centre(tetrominoWidth)
-  const [x, y] = tetris.tetrominoPosition
-
-  const centreDifference = prevCentre - centre
-  const newX = x + centreDifference
-
-  // TODO: y?
-  tetris.tetrominoPosition = [newX, y]
+  return [
+    clamp(0, tetris.width() - width, x),
+    clamp(0, tetris.height() - height, y)
+  ]
 }
+
+const rotateTetromino = (tetris, rotateFn) => () => {
+  tetris.tetromino = rotateFn(tetris.tetromino)
+}
+
+// Buffer for spawning
+const Y_BUFFER = 2
 
 class Tetris {
   constructor(width = 10, height = 20) {
@@ -75,29 +92,46 @@ class Tetris {
     this.tetromino = twoDArray
     this.trigger(Events.TETROMINO_SPAWN, { tetromino: twoDArray })
 
-    const tetrominoWidth = Grid.width(twoDArray)
-    const tetrominoXOrigin = this.centre() - this.centre(tetrominoWidth)
-    this.tetrominoPosition = [tetrominoXOrigin, 0]
+    // Spawns in buffer zone
+    this.tetrominoPosition = [this.centre(), Y_BUFFER]
 
-    const collisionDetected = this.detectCollisions(twoDArray, ...this.tetrominoPosition)
-    if (collisionDetected) {
-      this.tetrominoPosition = [tetrominoXOrigin, -1]
-      this.board = this.compositeBoard({ crop: true })
-      this.trigger(Events.GAME_OVER, { board: this.board, ticks: this.ticks })
+    let collisionDetected = this.detectCollisions(twoDArray, ...this.tetrominoPosition)
+
+    if (!collisionDetected) return
+
+    let count = 0
+    while (this.detectCollisions(twoDArray, ...this.tetrominoPosition)) {
+      this.tetrominoPosition[1]--
+      count++
+      if (count > 4) {
+        throw new Error(`Spawn failure: ${this.tetrominoPosition}`)
+      }
     }
+
+    this.board = this.compositeBoard()
+    this.trigger(Events.GAME_OVER, { board: this.board, ticks: this.ticks })
   }
 
   tick() {
+    // Handle landings
     if (
       this.tetrominoHasReachedBottom() ||
       this.tetrominoHasLandedOnTerrain()
     ) {
       this.trigger(Events.TETROMINO_LANDING)
       this.board = this.compositeBoard()
+      this.tetromino = null
       return
     }
 
-    this.tetrominoPosition = this.gravity()
+    // Handle spawning or gravity
+    if (!this.tetromino) {
+      this.spawn()
+    } else {
+      this.tetrominoPosition = this.gravity()
+    }
+
+    // Tick event
     this.trigger(Events.TICK, { board: this.board, ticks: ++this.ticks })
   }
 
@@ -131,29 +165,38 @@ class Tetris {
   }
 
   drop() {
-    while (this.move.down()) {}
+    let count = 0
+    while (this.move.down() && count <= 20) {
+      count++
+      if (count > 19) {
+        const err = new Error('Drop failure')
+        console.log('drop failure', this.tetromino, this.tetrominoPosition)
+        throw err
+      }
+    }
     this.tick()
   }
 
   gravity() {
     const [x, y] = this.tetrominoPosition
     const newY = y + 1
+    console.log('gravity', newY)
     return [x, newY]
   }
 
-  detectCollisions(tetromino, ...nextTetrominoPosition) {
+  detectCollisions(tetromino, x, y) {
     // Generate a superimposition of the tetromino on a blank board
     const blankBoard = Grid.blank(this.width(), this.height())
 
     let tetrominoBoard
     try {
-      tetrominoBoard = Grid.superimpose(blankBoard, tetromino, ...nextTetrominoPosition)
+      const projection = getTetrominoTopLeftFromOrigin(this, tetromino, [x, y])
+      tetrominoBoard = Grid.superimpose(blankBoard, tetromino, ...projection)
     } catch (err) {
+      console.log('!err!', err)
       // Out of bounds is considered a collision
       return true
     }
-
-
     // Add the superimposed board and the current board together
     const collisionBoard = Grid.add(this.board, tetrominoBoard)
     return collisionBoard.flat().some(value => value > 1)
@@ -176,10 +219,8 @@ class Tetris {
   }
 
   tetrominoHasLandedOnTerrain() {
-    const {
-      board,
-      tetromino,
-    } = this
+    const { tetromino } = this
+    if (!tetromino) return false
 
     // Get the position of the tetromino for the next tick
     const nextTetrominoPosition = this.gravity()
@@ -187,8 +228,13 @@ class Tetris {
   }
 
   tetrominoHasReachedBottom() {
-    const [, y] = this.tetrominoPosition
-    const bottomY = y + Grid.height(this.tetromino)
+    const {
+      tetromino,
+      tetrominoPosition,
+    } = this
+    if (!tetromino) return false
+    const [, y] = tetrominoPosition
+    const bottomY = y + Grid.height(tetromino) - 1
     return bottomY >= this.height()
   }
 
@@ -235,7 +281,8 @@ class Tetris {
       return this.board
     }
 
-    return Grid.superimpose(this.board, this.tetromino, ...this.tetrominoPosition, { crop })
+    const projection = getTetrominoTopLeftFromOrigin(this)
+    return Grid.superimpose(this.board, this.tetromino, ...projection, { crop })
   }
 
   height() {
@@ -246,8 +293,8 @@ class Tetris {
     return Grid.width(this.board)
   }
 
-  centre(width = this.width()) {
-    return Math.floor(width / 2)
+  centre(length = this.width()) {
+    return Math.floor(length / 2)
   }
 }
 
