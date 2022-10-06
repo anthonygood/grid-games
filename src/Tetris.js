@@ -47,8 +47,9 @@ const rotateTetromino = (tetris, rotateFn) => () => {
 const Y_BUFFER = 2
 
 class Tetris {
-  constructor(width = 10, height = 20) {
+  constructor(width = 10, height = 20, gravity = true) {
     this.board = Grid.blank(width, height)
+    this.gravityEnabled = gravity
     this.tetromino = null
     this.tetrominoPosition = null
     this.ticks = 0
@@ -59,8 +60,14 @@ class Tetris {
       [Events.LINE_CLEAR]: [],
       [Events.GAME_OVER]: [],
     }
+
+    // TODO: prevent rotating out of bounds
     this.rotate = rotateTetromino(this, Tetris.Tetromino.rotate)
     this.rotate.reverse = rotateTetromino(this, Tetris.Tetromino.rotate.reverse)
+    this.clamp = {
+      x: clamp.bind(null, 0, width - 1),
+      y: clamp.bind(null, 0, height - 1),
+    }
   }
 
   getSubscribers(event) {
@@ -142,7 +149,7 @@ class Tetris {
     if (!this.tetromino) {
       this.spawn()
     } else {
-      this.tetrominoPosition = this.gravity()
+      this.gravityEnabled && (this.tetrominoPosition = this.gravity())
     }
 
     // Tick event
@@ -154,7 +161,10 @@ class Tetris {
       return false
     }
 
-    this.tetrominoPosition = [x, y]
+    this.tetrominoPosition = [
+      this.clamp.x(x),
+      this.clamp.y(y),
+    ]
     return true
   }
 
@@ -179,7 +189,7 @@ class Tetris {
     let count = 0
     while (this.move.down()) {
       count++
-      if (count > 20) {
+      if (count > 999) {
         const err = new Error('Drop failure')
         console.log('drop failure', this.tetromino, this.tetrominoPosition)
         throw err

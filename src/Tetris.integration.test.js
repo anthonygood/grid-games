@@ -403,3 +403,7 @@ describe('Tetris', () => {
     })
   })
 })
+
+module.exports = {
+  times,
+}
