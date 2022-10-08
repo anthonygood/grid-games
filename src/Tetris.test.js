@@ -596,6 +596,26 @@ describe('Tetris', () => {
     })
   })
 
+  describe('buffer buffers tetrominoes', () => {
+    it('is 5 by default', () => {
+      const randTet = Tetris.prototype.randomTetromino
+      Tetris.prototype.randomTetromino = Tetris.Tetromino.skew
+
+      const tetris = new Tetris()
+      tetris.start()
+
+      expect(tetris.buffer.values).to.deep.equal([
+        Tetris.Tetromino.skew(),
+        Tetris.Tetromino.skew(),
+        Tetris.Tetromino.skew(),
+        Tetris.Tetromino.skew(),
+        Tetris.Tetromino.skew(),
+      ])
+
+      Tetris.prototype.randomTetromino = randTet
+    })
+  })
+
   describe('clearing lines', () => {
     it('does nothing with blank board', () => {
       const tetris = new Tetris(4, 5)

@@ -16,6 +16,28 @@ const clamp = (min, max, x) =>
     min
   )
 
+class Buffer {
+  constructor(length, getValFn) {
+    this.values = []
+    this.length = length
+    this.getValFn = getValFn
+  }
+
+  init() {
+    const { values, getValFn, length } = this
+    while (values.length < length) {
+      this.values.unshift(getValFn())
+    }
+  }
+
+  pop() {
+    const { values, getValFn } = this
+    const popped = values.pop()
+    this.values.unshift(getValFn())
+    return popped
+  }
+}
+
 // For controlling, Tetromino's origin should be center,
 // but we draw from the top left
 const getTetrominoTopLeftFromOrigin = (
@@ -53,12 +75,19 @@ const rotateTetromino = (tetris, rotateFn) => () => {
 const Y_BUFFER = 2
 
 class Tetris {
-  constructor(width = 10, height = 20, gravity = true) {
+  constructor(
+    width = 10,
+    height = 20,
+    gravity = true,
+    tetrominoBufferSize = 5
+  ) {
     this.board = Grid.blank(width, height)
     this.gravityEnabled = gravity
     this.tetromino = null
     this.tetrominoPosition = null
     this.ticks = 0
+    this.buffer = new Buffer(tetrominoBufferSize, this.randomTetromino)
+    this.bufferSize = tetrominoBufferSize
     this.eventListeners = {
       [Events.TICK]: [],
       [Events.TETROMINO_SPAWN]: [],
@@ -96,10 +125,11 @@ class Tetris {
   }
 
   start() {
+    this.buffer.init()
     this.spawn()
   }
 
-  spawn(twoDArray = this.randomTetromino()) {
+  spawn(twoDArray = this.buffer.pop()) {
     if (!twoDArray || !twoDArray.length || !twoDArray[0].length) {
       throw new TypeError('Must provide two dimensional array representing tetromino to spawn')
     }
@@ -136,8 +166,6 @@ class Tetris {
       this.tetrominoHasReachedBottom() ||
       this.tetrominoHasLandedOnTerrain()
     ) {
-      console.log('this.tetrominoHasReachedBottom()', this.tetrominoHasReachedBottom())
-      console.log('this.tetrominoHasLandedOnTerrain()', this.tetrominoHasLandedOnTerrain())
       this.trigger(
         Events.TETROMINO_LANDING,
         {

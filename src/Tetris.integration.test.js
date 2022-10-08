@@ -12,7 +12,7 @@ describe('Tetris', () => {
   it('can play a game of tetris', () => {
     const tetris = new Tetris()
 
-    const cue = tetromino => tetris.randomTetromino = () => tetromino
+    const cue = tetromino => tetris.buffer.pop = () => tetromino
     const eventRegister = {}
     const record = key => event => {
       const collection = eventRegister[key] = eventRegister[key] || []
