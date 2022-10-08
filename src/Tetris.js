@@ -220,16 +220,22 @@ class Tetris {
     }
   }
 
-  drop() {
-    let count = 0
-    while (this.move.down()) {
-      count++
-      if (count > 999) {
-        const err = new Error('Drop failure')
-        console.log('drop failure', this.tetromino, this.tetrominoPosition)
-        throw err
-      }
+  fallPosition() {
+    const { tetromino, tetrominoPosition } = this
+    const [x] = tetrominoPosition
+    let [, y] = tetrominoPosition
+
+    while (
+      !this.detectCollisions(tetromino, x, y + 1, true)
+    ) {
+      y++
     }
+
+    return [x, y]
+  }
+
+  drop() {
+    this.tetrominoPosition = this.fallPosition()
     this.tick()
   }
 
@@ -242,21 +248,6 @@ class Tetris {
       this.tetromino,
       this.fallPosition()
     )
-  }
-
-  fallPosition() {
-    const { tetromino, tetrominoPosition } = this
-    let [x, y] = tetrominoPosition
-
-    let fallPosition = [x, y]
-
-    while (
-      !this.detectCollisions(tetromino, x, y + 1, true)
-    ) {
-      fallPosition = [x, ++y]
-    }
-
-    return fallPosition
   }
 
   gravity() {
@@ -371,8 +362,6 @@ class Tetris {
     if (!tetromino) {
       return board
     }
-
-    console.log('compositeBoard!', tetrominoPosition)
 
     const projection = getTetrominoTopLeftFromOrigin(this, tetromino, tetrominoPosition)
     return Grid.superimpose(board, tetromino, ...projection)

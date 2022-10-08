@@ -1,5 +1,5 @@
 const { expect } = require('chai')
-const { blank, superimpose, debug, map } = require('./Grid')
+const { blank, superimpose } = require('./Grid')
 const { times } = require('./Tetris.integration.test')
 const { Tetris } = require('./Tetris')
 const { Tetromino } = Tetris
