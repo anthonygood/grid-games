@@ -616,6 +616,71 @@ describe('Tetris', () => {
     })
   })
 
+  describe('ghost', () => {
+    it('shows where tetromino will drop on terrain', () => {
+      const tetris = new Tetris(8, 10)
+      tetris.tetromino = Tetromino.L()
+      tetris.tetrominoPosition = [3,3]
+      tetris.board = [
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,1,0,1,0,1,0],
+        [0,1,0,1,0,1,0,1],
+      ]
+
+      expect(tetris.compositeBoard()).to.deep.equal([
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,1,1,1,0,0,0],
+        [0,0,1,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,1,0,1,0,1,0],
+        [0,1,0,1,0,1,0,1],
+      ])
+
+      expect(tetris.tetrominoGhost()).to.deep.equal([
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,1,1,1,0,0,0],
+        [0,0,1,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+      ])
+    })
+
+    it('shows where tetromino will drop on ground', () => {
+      const tetris = new Tetris(8, 10)
+      tetris.tetromino = Tetromino.L()
+      tetris.tetrominoPosition = [3,3]
+
+      expect(tetris.tetrominoGhost()).to.deep.equal([
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0],
+        [0,0,1,1,1,0,0,0],
+        [0,0,1,0,0,0,0,0],
+      ])
+    })
+  })
+
   describe('clearing lines', () => {
     it('does nothing with blank board', () => {
       const tetris = new Tetris(4, 5)

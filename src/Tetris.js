@@ -233,6 +233,32 @@ class Tetris {
     this.tick()
   }
 
+  tetrominoGhost() {
+    return this.compositeBoard(
+      Grid.blank(
+        this.width(),
+        this.height()
+      ),
+      this.tetromino,
+      this.fallPosition()
+    )
+  }
+
+  fallPosition() {
+    const { tetromino, tetrominoPosition } = this
+    let [x, y] = tetrominoPosition
+
+    let fallPosition = [x, y]
+
+    while (
+      !this.detectCollisions(tetromino, x, y + 1, true)
+    ) {
+      fallPosition = [x, ++y]
+    }
+
+    return fallPosition
+  }
+
   gravity() {
     const [x, y] = this.tetrominoPosition
     const newY = y + 1
@@ -281,11 +307,10 @@ class Tetris {
     return this.detectCollisions(tetromino, ...nextTetrominoPosition, true)
   }
 
-  tetrominoHasReachedBottom() {
-    const {
-      tetromino,
-      tetrominoPosition,
-    } = this
+  tetrominoHasReachedBottom(
+    tetromino = this.tetromino,
+    tetrominoPosition = this.tetrominoPosition
+  ) {
     if (!tetromino) return false
     const collideWithbottom = true
     const [, y] = getTetrominoTopLeftFromOrigin(
@@ -338,13 +363,19 @@ class Tetris {
     return true
   }
 
-  compositeBoard() {
-    if (!this.tetromino) {
-      return this.board
+  compositeBoard(
+    board = this.board,
+    tetromino = this.tetromino,
+    tetrominoPosition = this.tetrominoPosition
+  ) {
+    if (!tetromino) {
+      return board
     }
 
-    const projection = getTetrominoTopLeftFromOrigin(this)
-    return Grid.superimpose(this.board, this.tetromino, ...projection)
+    console.log('compositeBoard!', tetrominoPosition)
+
+    const projection = getTetrominoTopLeftFromOrigin(this, tetromino, tetrominoPosition)
+    return Grid.superimpose(board, tetromino, ...projection)
   }
 
   height() {
