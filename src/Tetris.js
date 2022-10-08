@@ -40,7 +40,13 @@ const getTetrominoTopLeftFromOrigin = (
 }
 
 const rotateTetromino = (tetris, rotateFn) => () => {
-  tetris.tetromino = rotateFn(tetris.tetromino)
+  const rotated = rotateFn(tetris.tetromino)
+  const collides = tetris.detectCollisions(rotated, ...tetris.tetrominoPosition)
+  if (collides) {
+    return false
+  }
+  tetris.tetromino = rotated
+  return true
 }
 
 // Buffer for spawning
@@ -61,7 +67,6 @@ class Tetris {
       [Events.GAME_OVER]: [],
     }
 
-    // TODO: prevent rotating out of bounds
     this.rotate = rotateTetromino(this, Tetris.Tetromino.rotate)
     this.rotate.reverse = rotateTetromino(this, Tetris.Tetromino.rotate.reverse)
     this.clamp = {
@@ -131,6 +136,8 @@ class Tetris {
       this.tetrominoHasReachedBottom() ||
       this.tetrominoHasLandedOnTerrain()
     ) {
+      console.log('this.tetrominoHasReachedBottom()', this.tetrominoHasReachedBottom())
+      console.log('this.tetrominoHasLandedOnTerrain()', this.tetrominoHasLandedOnTerrain())
       this.trigger(
         Events.TETROMINO_LANDING,
         {
@@ -252,7 +259,14 @@ class Tetris {
       tetrominoPosition,
     } = this
     if (!tetromino) return false
-    const [, y] = tetrominoPosition
+    const collideWithbottom = true
+    const [, y] = getTetrominoTopLeftFromOrigin(
+      this,
+      tetromino,
+      tetrominoPosition,
+      collideWithbottom
+    )
+
     const bottomY = y + Grid.height(tetromino) - 1
     return bottomY >= this.height()
   }

@@ -234,19 +234,14 @@ describe('Tetris', () => {
       ])
     })
 
-    it.only('likewise works for those long thin tetrominoes...', () => {
-      const tetromino = [
-        [1],
-        [1],
-        [1],
-        [1],
-      ]
-      const tetrominoPosition = [1, 17]
-
+    it('prevents rotation that would collide', () => {
       const tetris = new Tetris()
       tetris.tetromino = Tetromino.straight()
-      // tetris.rotate()
-      tetris.tetrominoPosition = [2, 17]
+      tetris.tetrominoPosition = [0, 4]
+      tetris.rotate()
+
+      // Now move into colliding position...
+      tetris.tetrominoPosition = [2, 16]
 
       tetris.board = [
         [0,0,0,0,0,0,0,0,0,0],
@@ -271,7 +266,6 @@ describe('Tetris', () => {
         [0,1,0,0,0,0,0,0,0,0],
       ]
 
-      debug(tetris.compositeBoard(), true)
       let landed = false
       tetris.on(Tetris.Events.TETROMINO_LANDING, () => landed = true)
 
@@ -280,7 +274,7 @@ describe('Tetris', () => {
 
       expect(landed).to.equal(false)
 
-      expect(tetris.board).to.deep.equal([
+      expect(tetris.compositeBoard()).to.deep.equal([
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
@@ -296,10 +290,10 @@ describe('Tetris', () => {
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
         [0,1,0,0,0,0,0,0,0,0],
-        [0,1,0,0,0,0,0,0,0,0],
-        [0,1,0,0,0,0,0,0,0,0],
-        [0,1,1,1,1,1,0,0,0,0],
-        [0,1,0,0,0,0,0,0,0,0],
+        [0,1,1,0,0,0,0,0,0,0],
+        [0,1,1,0,0,0,0,0,0,0],
+        [0,1,1,0,0,0,0,0,0,0],
+        [0,1,1,0,0,0,0,0,0,0],
         [0,1,0,0,0,0,0,0,0,0],
       ])
     })
