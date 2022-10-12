@@ -30,6 +30,10 @@ class Buffer {
     }
   }
 
+  peek() {
+    return this.values[this.length - 1]
+  }
+
   pop() {
     const { values, getValFn } = this
     const popped = values.pop()

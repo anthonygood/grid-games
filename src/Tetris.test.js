@@ -597,10 +597,11 @@ describe('Tetris', () => {
   })
 
   describe('buffer buffers tetrominoes', () => {
-    it('is 5 by default', () => {
-      const randTet = Tetris.prototype.randomTetromino
-      Tetris.prototype.randomTetromino = Tetris.Tetromino.skew
+    const randTet = Tetris.prototype.randomTetromino
+    before(() => Tetris.prototype.randomTetromino = Tetris.Tetromino.skew)
+    after(() => Tetris.prototype.randomTetromino = randTet)
 
+    it('is 5 by default', () => {
       const tetris = new Tetris()
       tetris.start()
 
@@ -611,8 +612,13 @@ describe('Tetris', () => {
         Tetris.Tetromino.skew(),
         Tetris.Tetromino.skew(),
       ])
+    })
 
-      Tetris.prototype.randomTetromino = randTet
+    it('can be peeked', () => {
+      const tetris = new Tetris()
+      tetris.start()
+
+      expect(tetris.buffer.peek()).to.deep.equal(Tetris.Tetromino.skew())
     })
   })
 
