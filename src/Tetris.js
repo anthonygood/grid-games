@@ -153,7 +153,7 @@ class Tetris {
     while (this.detectCollisions(twoDArray, ...this.tetrominoPosition)) {
       this.tetrominoPosition[1]--
       count++
-      if (count > 4) {
+      if (count > 6) {
         throw new Error(`Spawn failure: ${this.tetrominoPosition}`)
       }
     }
